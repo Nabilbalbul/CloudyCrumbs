@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloudy Crumbs – Beranda</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, var(--pink-deep) 0%, var(--pink-main) 60%, var(--pink-mid) 100%);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: var(--white);
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .hero h2 {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      opacity: 0.92;
+      margin-bottom: 1.5rem;
+      line-height: 1.65;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero .btn-primary {
+      background: var(--white);
+      color: var(--pink-deep);
+      margin-right: 0.5rem;
+    }
+
+    .hero .btn-primary:hover {
+      background: var(--pink-light);
+    }
+
+    .hero .btn-outline {
+      border-color: var(--white);
+      color: var(--white);
+    }
+
+    .hero .btn-outline:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* ── Info Cards ── */
+    .info-card {
+      background: var(--white);
+      border: 1px solid var(--pink-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .info-card h3 {
+      font-family: var(--font-head);
+      color: var(--pink-deep);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-card p {
+      font-size: 0.87rem;
+      line-height: 1.6;
+      color: var(--text-mid);
+    }
+
+    /* ── Menu ── */
+    .menu-card {
+      background: var(--white);
+      border: 1px solid var(--pink-border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      box-shadow: 0 1px 6px var(--shadow);
+    }
+
+    .menu-card .nama {
+      font-weight: 700;
+      color: var(--pink-deep);
+      font-size: 0.95rem;
+    }
+
+    .menu-card .harga {
+      color: var(--pink-main);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .menu-card .keterangan {
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    /* ── Jam Operasional ── */
+    .jam-section {
+      background: var(--white);
+      border: 1px solid var(--pink-border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .mb-2 { margin-bottom: 2rem; }
+    .mb-1 { margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌸 Cloudy Crumbs</h1>
+    <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
+  </header>
+
+  <nav aria-label="Menu Utama">
+    <ul>
+      <li><a href="beranda.html" class="active">Beranda</a></li>
+      <li><a href="booking.html">Reservasi</a></li>
+      <li><a href="riwayat.html">Riwayat</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="judul-hero">
+      <h2 id="judul-hero">Selamat Datang di Cloudy Crumbs 🌸</h2>
+      <p>
+        Cloudy Crumbs adalah kafe bakery sejak 2019 yang 
+        menyajikan cookies fresh dan berbagai pilihan tea 
+        dalam suasana hangat dan nyaman. Buat reservasi sekarang dan pastikan meja favorit Anda tersedia!
+      </p>
+      <a href="booking.html" class="btn btn-primary">Reservasi Sekarang</a>
+      <a href="riwayat.html" class="btn btn-outline">Lihat Riwayat</a>
+    </section>
+
+    <!-- Info Kafe -->
+    <section class="mb-2" aria-label="Informasi Kafe">
+      <h2 class="section-heading">Informasi Kafe</h2>
+      <div class="grid-3">
+        <article class="info-card">
+          <h3>📍 Lokasi</h3>
+          <p>Jl. Kopi Hangat No. 12,<br>Medan Baru, Sumatera Utara 20154</p>
+        </article>
+        <article class="info-card">
+          <h3>📞 Kontak</h3>
+          <p>
+            Telepon: (061) 123-4567<br>
+            WhatsApp: 0812-3456-7890<br>
+            Email: hello@cloudycrumbs.id
+          </p>
+        </article>
+        <article class="info-card">
+          <h3>🪑 Kapasitas</h3>
+          <p>
+            Total 60 kursi tersedia.<br>
+            Indoor (AC): 40 kursi.<br>
+            Outdoor (Taman): 20 kursi.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Menu Unggulan -->
+    <section class="mb-2" aria-labelledby="judul-menu">
+      <h2 class="section-heading" id="judul-menu">🍰 Menu Unggulan</h2>
+      <div class="grid-3">
+
+  <!-- CUPCAKE -->
+  <article class="menu-card best">
+    <span class="nama">🧁 Strawberry Cream Cupcake</span>
+    <span class="harga">Rp 28.000</span>
+    <span class="keterangan">Cupcake lembut dengan krim strawberry manis segar.</span>
+  </article>
+
+  <article class="menu-card">
+    <span class="nama">🧁 Chocolate Lava Cupcake</span>
+    <span class="harga">Rp 30.000</span>
+    <span class="keterangan">Cokelat lumer di dalam, favorit pecinta manis.</span>
+  </article>
+
+  <article class="menu-card best">
+    <span class="nama">🧁 Vanilla Berry Cupcake</span>
+    <span class="harga">Rp 27.000</span>
+    <span class="keterangan">Vanilla soft cake dengan topping blueberry & raspberry.</span>
+  </article>
+
+  <!-- TEA -->
+  <article class="menu-card best">
+    <span class="nama">🍵 Matcha Latte Creamy</span>
+    <span class="harga">Rp 34.000</span>
+    <span class="keterangan">Matcha Jepang dengan susu creamy dan foam lembut.</span>
+  </article>
+
+  <article class="menu-card">
+    <span class="nama">🍋 Lemon Tea Fresh</span>
+    <span class="harga">Rp 22.000</span>
+    <span class="keterangan">Teh segar dengan perasan lemon asli, dingin & refreshing.</span>
+  </article>
+
+  <article class="menu-card best">
+    <span class="nama">🌸 Rose Milk Tea</span>
+    <span class="harga">Rp 29.000</span>
+    <span class="keterangan">Milk tea dengan aroma mawar yang soft & calming.</span>
+  </article>
+
+  <article class="menu-card">
+    <span class="nama">🧋 Brown Sugar Milk Tea</span>
+    <span class="harga">Rp 31.000</span>
+    <span class="keterangan">Milk tea manis dengan brown sugar caramel khas.</span>
+  </article>
+
+  <article class="menu-card">
+    <span class="nama">🍑 Peach Iced Tea</span>
+    <span class="harga">Rp 26.000</span>
+    <span class="keterangan">Teh dingin dengan rasa peach yang manis segar.</span>
+  </article>
+
+  <article class="menu-card best">
+    <span class="nama">🍫 Choco Hazelnut Cupcake</span>
+    <span class="harga">Rp 32.000</span>
+    <span class="keterangan">Cupcake cokelat dengan krim hazelnut premium.</span>
+  </article>
+</div>
+    </section>
+
+    <!-- Jam Operasional (Tabel) -->
+    <section class="jam-section" aria-labelledby="judul-jam">
+      <h2 class="section-heading" id="judul-jam">🕐 Jam Operasional</h2>
+      <div class="tabel-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Hari</th>
+              <th>Jam Buka</th>
+              <th>Jam Tutup</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Senin – Kamis</td>
+              <td>08.00 WIB</td>
+              <td>21.00 WIB</td>
+              <td><span class="badge badge-hijau">Buka</span></td>
+            </tr>
+            <tr>
+              <td>Jumat</td>
+              <td>08.00 WIB</td>
+              <td>22.00 WIB</td>
+              <td><span class="badge badge-hijau">Buka</span></td>
+            </tr>
+            <tr>
+              <td>Sabtu</td>
+              <td>09.00 WIB</td>
+              <td>22.00 WIB</td>
+              <td><span class="badge badge-hijau">Buka</span></td>
+            </tr>
+            <tr>
+              <td>Minggu</td>
+              <td>09.00 WIB</td>
+              <td>20.00 WIB</td>
+              <td><span class="badge badge-hijau">Buka</span></td>
+            </tr>
+            <tr>
+              <td>Hari Libur Nasional</td>
+              <td>–</td>
+              <td>–</td>
+              <td><span class="badge badge-merah">Tutup</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Cloudy Crumbs. Semua hak dilindungi.</p>
+    <p>Jl. Kopi Hangat No. 12, Medan Baru, Sumatera Utara</p>
+  </footer>
+
+</body>
+</html>

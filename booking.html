@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloudy Crumbs – Reservasi</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Badge ketersediaan ── */
+    .badge-tersedia { background: #e8f5e9; color: #1b5e20; }
+    .badge-terbatas { background: #fff8e1; color: #e65100; }
+    .badge-penuh    { background: #fce4ec; color: #880e4f; }
+
+    /* ── Sidebar sticky ── */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* ── Tabel ketersediaan section ── */
+    .ketersediaan {
+      margin-top: 1.5rem;
+    }
+
+    .mb-05 { margin-bottom: 0.5rem; }
+    .mt-05 { margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌸 Cloudy Crumbs</h1>
+    <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
+  </header>
+
+  <nav aria-label="Menu Utama">
+    <ul>
+      <li><a href="beranda.html">Beranda</a></li>
+      <li><a href="booking.html" class="active">Reservasi</a></li>
+      <li><a href="riwayat.html">Riwayat</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <h1 class="page-title">📅 Form Reservasi Meja</h1>
+
+    <div class="grid-2">
+
+      <!-- Kolom Kiri: Form + Tabel Ketersediaan -->
+      <section aria-labelledby="judul-form">
+
+        <!-- Form Card -->
+        <div class="card">
+          <h2 id="judul-form" class="section-heading">Isi Data Reservasi</h2>
+
+          <form action="riwayat.html" method="get">
+
+            <div class="form-group">
+              <label for="nama">Nama Lengkap *</label>
+              <input type="text" id="nama" name="nama"
+                     placeholder="Masukkan nama lengkap" required />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="telepon">No. Telepon *</label>
+                <input type="tel" id="telepon" name="telepon"
+                       placeholder="08xx-xxxx-xxxx" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Alamat Email</label>
+                <input type="email" id="email" name="email"
+                       placeholder="contoh@email.com" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tanggal">Tanggal Kunjungan *</label>
+                <input type="date" id="tanggal" name="tanggal" required />
+              </div>
+              <div class="form-group">
+                <label for="waktu">Jam Kunjungan *</label>
+                <select id="waktu" name="waktu" required>
+                  <option value="">-- Pilih Jam --</option>
+                  <option value="08:00">08.00 WIB</option>
+                  <option value="09:00">09.00 WIB</option>
+                  <option value="10:00">10.00 WIB</option>
+                  <option value="11:00">11.00 WIB</option>
+                  <option value="12:00">12.00 WIB</option>
+                  <option value="13:00">13.00 WIB</option>
+                  <option value="14:00">14.00 WIB</option>
+                  <option value="15:00">15.00 WIB</option>
+                  <option value="16:00">16.00 WIB</option>
+                  <option value="17:00">17.00 WIB</option>
+                  <option value="18:00">18.00 WIB</option>
+                  <option value="19:00">19.00 WIB</option>
+                  <option value="20:00">20.00 WIB</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tamu">Jumlah Tamu *</label>
+                <select id="tamu" name="tamu" required>
+                  <option value="">-- Pilih --</option>
+                  <option value="1">1 Orang</option>
+                  <option value="2">2 Orang</option>
+                  <option value="3">3 Orang</option>
+                  <option value="4">4 Orang</option>
+                  <option value="5">5 Orang</option>
+                  <option value="6">6 Orang</option>
+                  <option value="7">7 – 10 Orang</option>
+                  <option value="10">Lebih dari 10 Orang</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="area">Area Tempat Duduk *</label>
+                <select id="area" name="area" required>
+                  <option value="">-- Pilih Area --</option>
+                  <option value="indoor">Indoor (AC)</option>
+                  <option value="outdoor">Outdoor (Taman)</option>
+                  <option value="vip">Ruang VIP</option>
+                  <option value="bebas">Tidak Ada Preferensi</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="acara">Jenis Acara</label>
+              <select id="acara" name="acara">
+                <option value="">-- Pilih (Opsional) --</option>
+                <option value="santai">Kunjungan Biasa</option>
+                <option value="ultah">Ulang Tahun</option>
+                <option value="meeting">Pertemuan Kerja</option>
+                <option value="kencan">Kencan / Perayaan</option>
+                <option value="keluarga">Makan Keluarga</option>
+                <option value="lainnya">Lainnya</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="catatan">Permintaan Khusus / Catatan</label>
+              <textarea id="catatan" name="catatan"
+                placeholder="Contoh: alergi makanan, dekorasi khusus, kursi bayi, dsb."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              ✅ Kirim Reservasi
+            </button>
+
+          </form>
+
+          <hr class="divider" />
+
+          <a href="beranda.html" class="btn btn-outline btn-full">
+            ← Kembali ke Beranda
+          </a>
+        </div>
+
+        <!-- Tabel Ketersediaan -->
+        <div class="card ketersediaan" aria-labelledby="judul-ketersediaan">
+          <h2 class="section-heading" id="judul-ketersediaan">
+            📋 Ketersediaan Meja Hari Ini
+          </h2>
+          <div class="tabel-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Indoor</th>
+                  <th>Outdoor</th>
+                  <th>VIP</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>08.00 – 10.00</td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                </tr>
+                <tr>
+                  <td>10.00 – 12.00</td>
+                  <td><span class="badge badge-terbatas">Terbatas</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                </tr>
+                <tr>
+                  <td>12.00 – 14.00</td>
+                  <td><span class="badge badge-penuh">Penuh</span></td>
+                  <td><span class="badge badge-terbatas">Terbatas</span></td>
+                  <td><span class="badge badge-terbatas">Terbatas</span></td>
+                </tr>
+                <tr>
+                  <td>14.00 – 16.00</td>
+                  <td><span class="badge badge-terbatas">Terbatas</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                </tr>
+                <tr>
+                  <td>16.00 – 18.00</td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                </tr>
+                <tr>
+                  <td>18.00 – 20.00</td>
+                  <td><span class="badge badge-tersedia">Tersedia</span></td>
+                  <td><span class="badge badge-penuh">Penuh</span></td>
+                  <td><span class="badge badge-terbatas">Terbatas</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Kolom Kanan: Sidebar Info -->
+      <aside class="sidebar" aria-label="Informasi Tambahan">
+
+        <div class="info-box">
+          <h3>📌 Ketentuan Reservasi</h3>
+          <ul>
+            <li>Reservasi dibuat min. 2 jam sebelumnya</li>
+            <li>Batas tahan meja: 15 menit</li>
+            <li>Pembatalan maks. 1 jam sebelum kunjungan</li>
+            <li>Grup &gt;10 orang, hubungi kami langsung</li>
+            <li>Reservasi berlaku untuk 1 sesi (2 jam)</li>
+          </ul>
+        </div>
+
+        <div class="info-box">
+          <h3>🕐 Jam Operasional</h3>
+          <ul>
+            <li>Sen – Kam: 08.00 – 21.00</li>
+            <li>Jumat: 08.00 – 22.00</li>
+            <li>Sabtu: 09.00 – 22.00</li>
+            <li>Minggu: 09.00 – 20.00</li>
+          </ul>
+        </div>
+
+        <div class="info-box">
+          <h3>📞 Butuh Bantuan?</h3>
+          <p>
+            Hubungi kami langsung:<br><br>
+            <strong>(061) 123-4567</strong><br>
+            atau WhatsApp:<br>
+            <strong>0812-3456-7890</strong><br><br>
+            Kami siap membantu Anda membuat reservasi yang sempurna!
+          </p>
+        </div>
+
+        <div class="info-box">
+          <h3>🌸 Layanan Spesial</h3>
+          <ul>
+            <li>Dekorasi ulang tahun</li>
+            <li>Paket meeting (min. 4 orang)</li>
+            <li>Pre-order kue & pastri</li>
+            <li>Catering untuk acara privat</li>
+          </ul>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Cloudy Crumbs. Semua hak dilindungi.</p>
+    <p>Jl. Kopi Hangat No. 12, Medan Baru, Sumatera Utara</p>
+  </footer>
+
+</body>
+</html>

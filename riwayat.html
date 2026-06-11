@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloudy Crumbs – Riwayat Reservasi</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Stat box warna-warni ── */
+    .stat-box.pink   { border-top: 4px solid var(--pink-deep); }
+    .stat-box.green  { border-top: 4px solid #43a047; }
+    .stat-box.yellow { border-top: 4px solid #fb8c00; }
+    .stat-box.red    { border-top: 4px solid #e53935; }
+
+    .stat-box.green  .angka { color: #2e7d32; }
+    .stat-box.yellow .angka { color: #e65100; }
+    .stat-box.red    .angka { color: #b71c1c; }
+
+    /* ── Filter card ── */
+    .filter-card {
+      background: var(--white);
+      border: 1px solid var(--pink-border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .filter-card h2 {
+      font-family: var(--font-head);
+      color: var(--pink-deep);
+      font-size: 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .filter-group label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-mid);
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid var(--pink-border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: var(--pink-pale);
+      color: var(--text-dark);
+      font-family: var(--font-body);
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      outline: none;
+      border-color: var(--pink-main);
+    }
+
+    /* ── Tabel card ── */
+    .tabel-card {
+      background: var(--white);
+      border: 1px solid var(--pink-border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      box-shadow: 0 2px 10px var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    .tabel-card h2 {
+      font-family: var(--font-head);
+      color: var(--pink-deep);
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .mb-2 { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌸 Cloudy Crumbs</h1>
+    <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
+  </header>
+
+  <nav aria-label="Menu Utama">
+    <ul>
+      <li><a href="beranda.html">Beranda</a></li>
+      <li><a href="booking.html">Reservasi</a></li>
+      <li><a href="riwayat.html" class="active">Riwayat</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <h1 class="page-title">📋 Riwayat Reservasi</h1>
+
+    <!-- Statistik -->
+    <section class="mb-2" aria-label="Ringkasan Reservasi">
+      <div class="grid-4">
+        <div class="stat-box pink">
+          <span class="angka">12</span>
+          <span class="label">Total Reservasi</span>
+        </div>
+        <div class="stat-box green">
+          <span class="angka">8</span>
+          <span class="label">Terkonfirmasi</span>
+        </div>
+        <div class="stat-box yellow">
+          <span class="angka">2</span>
+          <span class="label">Menunggu</span>
+        </div>
+        <div class="stat-box red">
+          <span class="angka">2</span>
+          <span class="label">Dibatalkan</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter -->
+    <section class="filter-card" aria-labelledby="judul-filter">
+      <h2 id="judul-filter">🔍 Filter & Cari</h2>
+      <form action="#" method="get">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="cari-nama">Nama Tamu</label>
+            <input type="text" id="cari-nama" name="nama"
+                   placeholder="Ketik nama..." />
+          </div>
+          <div class="filter-group">
+            <label for="filter-tanggal">Tanggal</label>
+            <input type="date" id="filter-tanggal" name="tanggal" />
+          </div>
+          <div class="filter-group">
+            <label for="filter-status">Status</label>
+            <select id="filter-status" name="status">
+              <option value="">Semua Status</option>
+              <option value="konfirmasi">Terkonfirmasi</option>
+              <option value="menunggu">Menunggu</option>
+              <option value="batal">Dibatalkan</option>
+              <option value="selesai">Selesai</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-area">Area</label>
+            <select id="filter-area" name="area">
+              <option value="">Semua Area</option>
+              <option value="indoor">Indoor</option>
+              <option value="outdoor">Outdoor</option>
+              <option value="vip">VIP</option>
+            </select>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Cari</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Tabel Riwayat -->
+    <section class="tabel-card" aria-labelledby="judul-tabel">
+      <h2 id="judul-tabel">Daftar Reservasi</h2>
+
+      <div class="tabel-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Kode</th>
+              <th>Nama Tamu</th>
+              <th>Tanggal</th>
+              <th>Jam</th>
+              <th>Tamu</th>
+              <th>Area</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>CC-001</strong></td>
+              <td>Andi Wirawan</td>
+              <td>15 Apr 2025</td>
+              <td>12.00</td>
+              <td>4 orang</td>
+              <td>Indoor</td>
+              <td><span class="badge badge-biru">Selesai</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>CC-002</strong></td>
+              <td>Sari Dewi</td>
+              <td>18 Apr 2025</td>
+              <td>19.00</td>
+              <td>2 orang</td>
+              <td>Outdoor</td>
+              <td><span class="badge badge-hijau">Terkonfirmasi</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                  <a href="#" class="btn btn-danger">Batal</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>CC-003</strong></td>
+              <td>Rudi Hartono</td>
+              <td>20 Apr 2025</td>
+              <td>10.00</td>
+              <td>6 orang</td>
+              <td>VIP</td>
+              <td><span class="badge badge-hijau">Terkonfirmasi</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                  <a href="#" class="btn btn-danger">Batal</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>CC-004</strong></td>
+              <td>Maya Putri</td>
+              <td>22 Apr 2025</td>
+              <td>14.00</td>
+              <td>3 orang</td>
+              <td>Indoor</td>
+              <td><span class="badge badge-kuning">Menunggu</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                  <a href="#" class="btn btn-danger">Batal</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>CC-005</strong></td>
+              <td>Budi Santoso</td>
+              <td>10 Apr 2025</td>
+              <td>08.00</td>
+              <td>1 orang</td>
+              <td>Indoor</td>
+              <td><span class="badge badge-merah">Dibatalkan</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>CC-006</strong></td>
+              <td>Lina Marlina</td>
+              <td>25 Apr 2025</td>
+              <td>18.00</td>
+              <td>5 orang</td>
+              <td>Outdoor</td>
+              <td><span class="badge badge-kuning">Menunggu</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                  <a href="#" class="btn btn-danger">Batal</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>CC-007</strong></td>
+              <td>Hendra Pratama</td>
+              <td>28 Apr 2025</td>
+              <td>13.00</td>
+              <td>2 orang</td>
+              <td>VIP</td>
+              <td><span class="badge badge-hijau">Terkonfirmasi</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                  <a href="#" class="btn btn-danger">Batal</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>CC-008</strong></td>
+              <td>Dian Rahayu</td>
+              <td>05 Apr 2025</td>
+              <td>16.00</td>
+              <td>4 orang</td>
+              <td>Indoor</td>
+              <td><span class="badge badge-biru">Selesai</span></td>
+              <td>
+                <div class="aksi-group">
+                  <a href="#" class="btn btn-outline btn-sm">Detail</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="pagination" aria-label="Navigasi Halaman">
+        <span style="color:var(--text-soft); font-size:0.85rem;">Halaman:</span>
+        <a href="#" class="aktif">1</a>
+        <a href="#">2</a>
+        <a href="#">›</a>
+      </nav>
+    </section>
+
+    <!-- Tombol Bawah -->
+    <div class="flex-gap">
+      <a href="booking.html" class="btn btn-primary">+ Buat Reservasi Baru</a>
+      <a href="beranda.html" class="btn btn-outline">← Kembali ke Beranda</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Cloudy Crumbs. Semua hak dilindungi.</p>
+    <p>Jl. Kopi Hangat No. 12, Medan Baru, Sumatera Utara</p>
+  </footer>
+
+</body>
+</html>
