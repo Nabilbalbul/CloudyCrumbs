@@ -39,7 +39,7 @@
 
   function formatTanggal(iso) {
     if (!iso) return "-";
-    const bulan = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+    const bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
     const [y, m, d] = iso.split("-");
     if (!y || !m || !d) return iso;
     return `${d} ${bulan[parseInt(m, 10) - 1]} ${y}`;
@@ -419,6 +419,56 @@
   }
 
   let baruDibuatId = null;
+  // menambahkan pagination dinamis (dementhia)
+  let currentPage = 1;
+  const ITEMS_PER_PAGE = 5;
+
+
+// menambahkan fungsi pagination dinamis (dementhia)
+function renderPagination(totalPages) {
+  const nav = document.querySelector(".pagination");
+  if (!nav) return;
+
+  nav.innerHTML = "";
+
+  if (totalPages <= 1) return;
+
+  // Tombol Prev
+  const prev = document.createElement("a");
+  prev.href = "#";
+  prev.textContent = "‹";
+  prev.className = currentPage === 1 ? "disabled" : "";
+  prev.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPage > 1) { currentPage--; renderTabelRiwayat(ambilFilter()); }
+  });
+  nav.appendChild(prev);
+
+  // Tombol Angka
+  for (let i = 1; i <= totalPages; i++) {
+    const a = document.createElement("a");
+    a.href = "#";
+    a.textContent = i;
+    if (i === currentPage) a.className = "aktif";
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      currentPage = i;
+      renderTabelRiwayat(ambilFilter());
+    });
+    nav.appendChild(a);
+  }
+
+  // Tombol Next
+  const next = document.createElement("a");
+  next.href = "#";
+  next.textContent = "›";
+  next.className = currentPage === totalPages ? "disabled" : "";
+  next.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) { currentPage++; renderTabelRiwayat(ambilFilter()); }
+  });
+  nav.appendChild(next);
+}
 
   function renderTabelRiwayat(filter) {
     const tbody = $("#tbodyRiwayat");
@@ -444,6 +494,14 @@
 
     // urutkan: terbaru dulu (berdasarkan id)
     data = data.slice().sort((a, b) => b.id - a.id);
+    // menambahkan pagination dinamis (dementhia)
+    // Hitung total halaman
+    const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+    if (currentPage > totalPages) currentPage = 1;
+
+    // Potong data sesuai halaman aktif
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    data = data.slice(start, start + ITEMS_PER_PAGE);
 
     tbody.innerHTML = "";
 
@@ -489,6 +547,8 @@
 
     const info = $("#infoHasil");
     if (info) info.textContent = `(${data.length} hasil)`;
+
+    renderPagination(totalPages);
 
     perbaruiStatistik();
   }
@@ -555,8 +615,8 @@
               <label for="edit-waktu">Jam Kunjungan *</label>
               <select id="edit-waktu" required>
                 <option value="">-- Pilih Jam --</option>
-                ${["08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"]
-                  .map((j) => `<option value="${j}">${j.replace(":", ".")} WIB</option>`).join("")}
+                ${["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"]
+        .map((j) => `<option value="${j}">${j.replace(":", ".")} WIB</option>`).join("")}
               </select>
             </div>
           </div>
@@ -830,24 +890,24 @@
     }
   });
 
-/* ── Hamburger Menu ─ (dementhia) */
-function setupHamburger() {
-  const btn = document.getElementById("hamburgerBtn");
-  const ul = document.querySelector("nav ul");
-  if (!btn || !ul) return;
+  /* ── Hamburger Menu ─ (dementhia) */
+  function setupHamburger() {
+    const btn = document.getElementById("hamburgerBtn");
+    const ul = document.querySelector("nav ul");
+    if (!btn || !ul) return;
 
-  btn.addEventListener("click", () => {
-    btn.classList.toggle("open");
-    ul.classList.toggle("open");
-  });
-
-  // Tutup menu saat salah satu link diklik
-  ul.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => {
-      btn.classList.remove("open");
-      ul.classList.remove("open");
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("open");
+      ul.classList.toggle("open");
     });
-  });
-}
+
+    // Tutup menu saat salah satu link diklik
+    ul.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        btn.classList.remove("open");
+        ul.classList.remove("open");
+      });
+    });
+  }
 
 })();
