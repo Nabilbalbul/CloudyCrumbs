@@ -1234,3 +1234,46 @@ header h1:hover {
 }
 
 
+/* ── Hamburger Button ── (dementhia) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+}
+
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background: var(--white);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Animasi X saat menu terbuka */
+.hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+@media (max-width: 600px) {
+  .hamburger { display: flex; position: absolute; right: 1rem; top: 1.2rem; }
+
+  nav ul {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 0;
+  }
+
+  nav ul.open { display: flex; }
+
+  nav ul li a {
+    padding: 0.85rem 1.5rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+}

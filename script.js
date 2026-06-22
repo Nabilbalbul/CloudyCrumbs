@@ -813,6 +813,8 @@
     setupFormReservasi();
     setupHalamanRiwayat();
     setupStatusBuka();
+    // menambahkan setup hamburger (dementhia)
+    setupHamburger();
 
     // sapaan kecil saat halaman dibuka (sekali per sesi biar tidak mengganggu)
     if (!sessionStorage.getItem("ccSudahSapa")) {
@@ -827,4 +829,25 @@
       sessionStorage.setItem("ccSudahSapa", "1");
     }
   });
+
+/* ── Hamburger Menu ─ (dementhia) */
+function setupHamburger() {
+  const btn = document.getElementById("hamburgerBtn");
+  const ul = document.querySelector("nav ul");
+  if (!btn || !ul) return;
+
+  btn.addEventListener("click", () => {
+    btn.classList.toggle("open");
+    ul.classList.toggle("open");
+  });
+
+  // Tutup menu saat salah satu link diklik
+  ul.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      btn.classList.remove("open");
+      ul.classList.remove("open");
+    });
+  });
+}
+
 })();

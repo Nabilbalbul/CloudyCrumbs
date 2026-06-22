@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,14 +8,33 @@
   <link rel="stylesheet" href="style.css" />
   <style>
     /* ── Stat box warna-warni ── */
-    .stat-box.pink   { border-top: 4px solid var(--pink-deep); }
-    .stat-box.green  { border-top: 4px solid #43a047; }
-    .stat-box.yellow { border-top: 4px solid #fb8c00; }
-    .stat-box.red    { border-top: 4px solid #e53935; }
+    .stat-box.pink {
+      border-top: 4px solid var(--pink-deep);
+    }
 
-    .stat-box.green  .angka { color: #2e7d32; }
-    .stat-box.yellow .angka { color: #e65100; }
-    .stat-box.red    .angka { color: #b71c1c; }
+    .stat-box.green {
+      border-top: 4px solid #43a047;
+    }
+
+    .stat-box.yellow {
+      border-top: 4px solid #fb8c00;
+    }
+
+    .stat-box.red {
+      border-top: 4px solid #e53935;
+    }
+
+    .stat-box.green .angka {
+      color: #2e7d32;
+    }
+
+    .stat-box.yellow .angka {
+      color: #e65100;
+    }
+
+    .stat-box.red .angka {
+      color: #b71c1c;
+    }
 
     /* ── Filter card ── */
     .filter-card {
@@ -88,14 +108,23 @@
       margin-bottom: 1rem;
     }
 
-    .mb-2 { margin-bottom: 2rem; }
+    .mb-2 {
+      margin-bottom: 2rem;
+    }
   </style>
 </head>
+
 <body>
 
-  <header>
+  <!-- Hamburger menu mobile (dementhia) -->
+  <header style="position:relative;">
     <h1>🌸 Cloudy Crumbs</h1>
     <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Buka menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </header>
 
   <nav aria-label="Menu Utama">
@@ -139,8 +168,7 @@
         <div class="filter-row">
           <div class="filter-group">
             <label for="cari-nama">Nama Tamu</label>
-            <input type="text" id="cari-nama" name="nama"
-                   placeholder="Ketik nama..." />
+            <input type="text" id="cari-nama" name="nama" placeholder="Ketik nama..." />
           </div>
           <div class="filter-group">
             <label for="filter-tanggal">Tanggal</label>
@@ -348,4 +376,5 @@
 
   <script src="script.js" defer></script>
 </body>
+
 </html>

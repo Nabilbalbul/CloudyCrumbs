@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,9 +8,20 @@
   <link rel="stylesheet" href="style.css" />
   <style>
     /* ── Badge ketersediaan ── */
-    .badge-tersedia { background: #e8f5e9; color: #1b5e20; }
-    .badge-terbatas { background: #fff8e1; color: #e65100; }
-    .badge-penuh    { background: #fce4ec; color: #880e4f; }
+    .badge-tersedia {
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    .badge-terbatas {
+      background: #fff8e1;
+      color: #e65100;
+    }
+
+    .badge-penuh {
+      background: #fce4ec;
+      color: #880e4f;
+    }
 
     /* ── Sidebar sticky ── */
     .sidebar {
@@ -23,15 +35,27 @@
       margin-top: 1.5rem;
     }
 
-    .mb-05 { margin-bottom: 0.5rem; }
-    .mt-05 { margin-top: 0.5rem; }
+    .mb-05 {
+      margin-bottom: 0.5rem;
+    }
+
+    .mt-05 {
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
+
 <body>
 
-  <header>
+  <!-- Hamburger menu mobile (dementhia) -->
+  <header style="position:relative;">
     <h1>🌸 Cloudy Crumbs</h1>
     <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Buka menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </header>
 
   <nav aria-label="Menu Utama">
@@ -59,20 +83,17 @@
 
             <div class="form-group">
               <label for="nama">Nama Lengkap *</label>
-              <input type="text" id="nama" name="nama"
-                     placeholder="Masukkan nama lengkap" required />
+              <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required />
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label for="telepon">No. Telepon *</label>
-                <input type="tel" id="telepon" name="telepon"
-                       placeholder="08xx-xxxx-xxxx" required />
+                <input type="tel" id="telepon" name="telepon" placeholder="08xx-xxxx-xxxx" required />
               </div>
               <div class="form-group">
                 <label for="email">Alamat Email</label>
-                <input type="email" id="email" name="email"
-                       placeholder="contoh@email.com" />
+                <input type="email" id="email" name="email" placeholder="contoh@email.com" />
               </div>
             </div>
 
@@ -278,4 +299,5 @@
 
   <script src="script.js" defer></script>
 </body>
+
 </html>
