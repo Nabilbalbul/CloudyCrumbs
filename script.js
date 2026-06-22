@@ -346,6 +346,15 @@
     if (!form) return;
 
     setupLiveValidation(form);
+    // menambahkan meja real time dan tanggal (dementhia)
+    const inputTanggal = $("#tanggal", form);
+if (inputTanggal) {
+  const hariIni = new Date().toISOString().split("T")[0];
+  inputTanggal.min = hariIni;
+  inputTanggal.addEventListener("change", updateKetersediaan);
+  const inputArea = $("#area", form);
+  if (inputArea) inputArea.addEventListener("change", updateKetersediaan);
+}
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -468,6 +477,73 @@ function renderPagination(totalPages) {
     if (currentPage < totalPages) { currentPage++; renderTabelRiwayat(ambilFilter()); }
   });
   nav.appendChild(next);
+}
+
+// menambahkan meja real time dan tanggal (dementhia)
+
+function updateKetersediaan() {
+  const inputTanggal = $("#tanggal");
+  if (!inputTanggal) return;
+
+  const tanggalDipilih = inputTanggal.value;
+  const tabelBody = document.querySelector(".ketersediaan table tbody");
+  if (!tabelBody) return;
+
+  const kapasitas = { indoor: 40, outdoor: 20, vip: 10 };
+
+  const slots = [
+    { label:"08.00 – 10.00", jam:["08:00","09:00"] },
+    { label:"10.00 – 12.00", jam:["10:00","11:00"] },
+    { label:"12.00 – 14.00", jam:["12:00","13:00"] },
+    { label:"14.00 – 16.00", jam:["14:00","15:00"] },
+    { label:"16.00 – 18.00", jam:["16:00","17:00"] },
+    { label:"18.00 – 20.00", jam:["18:00","19:00"] },
+  ];
+
+  const semua = semuaData().filter(r =>
+    r.tanggal === tanggalDipilih &&
+    r.status !== "batal"
+  );
+
+  function hitungTamu(slot, area) {
+    return semua
+      .filter(r => slot.jam.includes(r.waktu) && r.area === area)
+      .reduce((total, r) => total + (parseInt(r.tamu) || 1), 0);
+  }
+
+  function badgeKetersediaan(terpakai, maks) {
+    const sisa = maks - terpakai;
+    const persen = sisa / maks;
+    if (sisa <= 0)      return `<span class="badge badge-penuh">Penuh</span>`;
+    if (persen <= 0.5)  return `<span class="badge badge-terbatas">Terbatas (${sisa} kursi)</span>`;
+    return `<span class="badge badge-tersedia">Tersedia (${sisa} kursi)</span>`;
+  }
+
+  const hariIni = new Date().toISOString().split("T")[0];
+
+  tabelBody.innerHTML = slots.map(slot => {
+    if (!tanggalDipilih || tanggalDipilih < hariIni) {
+      return `
+        <tr>
+          <td>${slot.label}</td>
+          <td colspan="3" style="text-align:center; color:var(--text-soft); font-size:0.85rem;">
+            — Pilih tanggal yang valid —
+          </td>
+        </tr>`;
+    }
+
+    const indoorTerpakai  = hitungTamu(slot, "indoor");
+    const outdoorTerpakai = hitungTamu(slot, "outdoor");
+    const vipTerpakai     = hitungTamu(slot, "vip");
+
+    return `
+      <tr>
+        <td>${slot.label}</td>
+        <td>${badgeKetersediaan(indoorTerpakai, kapasitas.indoor)}</td>
+        <td>${badgeKetersediaan(outdoorTerpakai, kapasitas.outdoor)}</td>
+        <td>${badgeKetersediaan(vipTerpakai, kapasitas.vip)}</td>
+      </tr>`;
+  }).join("");
 }
 
   function renderTabelRiwayat(filter) {
@@ -875,6 +951,8 @@ function renderPagination(totalPages) {
     setupStatusBuka();
     // menambahkan setup hamburger (dementhia)
     setupHamburger();
+    // menambahkan fitur meja real time dan tanggal (dementhia)
+    updateKetersediaan();
 
     // sapaan kecil saat halaman dibuka (sekali per sesi biar tidak mengganggu)
     if (!sessionStorage.getItem("ccSudahSapa")) {
