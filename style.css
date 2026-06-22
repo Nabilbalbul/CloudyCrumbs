@@ -36,11 +36,29 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
   background-color: var(--pink-pale);
+  background-image:
+    linear-gradient(rgba(255, 240, 245, 0.90), rgba(255, 240, 245, 0.94)),
+    radial-gradient(circle at 12% 18%, rgba(244,143,177,0.18) 0%, transparent 45%),
+    radial-gradient(circle at 88% 12%, rgba(233,30,140,0.12) 0%, transparent 40%),
+    radial-gradient(circle at 92% 85%, rgba(244,143,177,0.16) 0%, transparent 42%),
+    radial-gradient(circle at 8% 88%, rgba(233,30,140,0.10) 0%, transparent 40%),
+    url('https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?auto=format&fit=crop&w=1920&q=60');
+  background-size: auto, auto, auto, auto, auto, cover;
+  background-position: center, center, center, center, center, center;
+  background-attachment: scroll, scroll, scroll, scroll, scroll, fixed;
+  background-repeat: no-repeat;
   color: var(--text-dark);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
 }
+
+header { position: relative; z-index: 2; }
+nav    { position: relative; z-index: 2; }
+main   { position: relative; z-index: 2; }
+footer { position: relative; z-index: 2; }
 
 /* ============================================
    HEADER
@@ -634,3 +652,585 @@ nav ul li a:hover {
   transform: translateY(-6px) scale(1.04);
   box-shadow: 0 8px 22px rgba(194, 24, 91, 0.25);
 }
+
+/* ============================================
+   PAGE TRANSITION (fade + float halus)
+   ============================================ */
+body {
+  opacity: 0;
+  animation: pageFadeIn 0.55s ease forwards;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.995); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+body.page-leave {
+  animation: pageFadeOut 0.32s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes pageFadeOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-8px) scale(0.985); }
+}
+
+/* lapisan overlay manis saat pindah halaman */
+#ccPageOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: radial-gradient(circle at 50% 40%, var(--pink-mid), var(--pink-deep));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+
+#ccPageOverlay.show {
+  opacity: 1;
+}
+
+#ccPageOverlay .overlay-emoji {
+  font-size: 2.4rem;
+  animation: floatBounce 0.6s ease-in-out infinite;
+}
+
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50%      { transform: translateY(-14px) rotate(4deg); }
+}
+
+/* ============================================
+   TOAST NOTIFICATION (super cute)
+   ============================================ */
+#ccToastWrap {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 92vw;
+}
+
+.cc-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-width: 260px;
+  max-width: 340px;
+  background: var(--white);
+  border: 1.5px solid var(--pink-border);
+  border-left: 5px solid var(--pink-deep);
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+  box-shadow: 0 8px 24px rgba(194, 24, 91, 0.22);
+  font-size: 0.86rem;
+  color: var(--text-dark);
+  position: relative;
+  overflow: hidden;
+  animation: toastIn 0.35s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+.cc-toast.success { border-left-color: #2e7d32; }
+.cc-toast.error   { border-left-color: #c62828; }
+.cc-toast.info    { border-left-color: #1565c0; }
+
+.cc-toast.closing {
+  animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(60px) scale(0.9); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to   { opacity: 0; transform: translateX(60px) scale(0.9); }
+}
+
+.cc-toast .cc-toast-emoji {
+  font-size: 1.3rem;
+  line-height: 1;
+  animation: wiggle 0.6s ease-in-out;
+}
+
+.cc-toast .cc-toast-body { flex: 1; }
+
+.cc-toast .cc-toast-title {
+  font-weight: 800;
+  color: var(--pink-deep);
+  margin-bottom: 0.15rem;
+  font-family: var(--font-head);
+  font-size: 0.92rem;
+}
+
+.cc-toast .cc-toast-msg {
+  color: var(--text-mid);
+  line-height: 1.45;
+}
+
+.cc-toast .cc-toast-close {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.cc-toast .cc-toast-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pink-deep), var(--pink-main));
+  animation-name: toastBar;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes toastBar {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* ============================================
+   FORM FIELD ERROR (validasi cute)
+   ============================================ */
+.form-group.field-error input,
+.form-group.field-error select,
+.form-group.field-error textarea {
+  border-color: #e53935 !important;
+  background: #fff5f5;
+  animation: shake 0.35s ease;
+}
+
+.form-group .field-error-msg {
+  display: none;
+  color: #c62828;
+  font-size: 0.78rem;
+  margin-top: 0.3rem;
+  font-weight: 700;
+}
+
+.form-group.field-error .field-error-msg {
+  display: block;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+
+/* status buka/tutup live di hero */
+.status-live {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.9rem !important;
+}
+
+/* info hasil pencarian riwayat */
+.info-hasil {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* baris kosong saat filter tidak ketemu */
+.empty-row td {
+  text-align: center;
+  padding: 2rem 1rem !important;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
+/* highlight baris baru yang baru ditambahkan */
+@keyframes newRowPop {
+  0%   { background: var(--pink-light); }
+  100% { background: transparent; }
+}
+
+tr.row-new {
+  animation: newRowPop 1.6s ease;
+}
+
+/* tombol batal dengan sedikit micro-interaction */
+.btn-danger, .btn-outline, .btn-primary {
+  position: relative;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+/* sparkle kecil di hero saat hover tombol */
+.btn-primary:active {
+  filter: brightness(0.97);
+}
+
+/* ============================================
+   DEKORASI MENGAMBANG (pastry & bunga) 🧁🌸
+   ============================================ */
+.cc-decor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cc-decor {
+  position: absolute;
+  opacity: 0.5;
+  filter: drop-shadow(0 4px 8px rgba(194,24,91,0.12));
+  animation: ccFloat 9s ease-in-out infinite, ccSpin 14s linear infinite;
+}
+
+@keyframes ccFloat {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50%      { transform: translateY(-26px) rotate(var(--rot, 0deg)); }
+}
+
+@keyframes ccSpin {
+  0%   { filter: drop-shadow(0 4px 8px rgba(194,24,91,0.12)) hue-rotate(0deg); }
+  50%  { filter: drop-shadow(0 4px 8px rgba(194,24,91,0.12)) hue-rotate(8deg); }
+  100% { filter: drop-shadow(0 4px 8px rgba(194,24,91,0.12)) hue-rotate(0deg); }
+}
+
+@media (max-width: 700px) {
+  .cc-decor { opacity: 0.32; transform: scale(0.8); }
+}
+
+/* ============================================
+   KONFETI saat reservasi berhasil dibuat 🎉
+   ============================================ */
+.cc-confetti {
+  position: fixed;
+  top: -40px;
+  z-index: 9997;
+  font-size: 1.5rem;
+  pointer-events: none;
+  animation: ccConfettiFall linear forwards;
+}
+
+@keyframes ccConfettiFall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0.15; }
+}
+
+/* ============================================
+   MODAL EDIT RESERVASI
+   ============================================ */
+.cc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 10, 35, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 9990;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.cc-modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cc-modal {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 1.6rem;
+  max-width: 520px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 18px 50px rgba(194,24,91,0.3);
+  border: 1.5px solid var(--pink-border);
+  transform: translateY(30px) scale(0.96);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.3s ease;
+}
+
+.cc-modal-overlay.show .cc-modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.cc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+}
+
+.cc-modal-header h2 {
+  font-family: var(--font-head);
+  color: var(--pink-deep);
+  font-size: 1.2rem;
+}
+
+.cc-modal-close {
+  background: var(--pink-light);
+  border: none;
+  color: var(--pink-deep);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.cc-modal-close:hover {
+  background: var(--pink-border);
+  transform: rotate(90deg);
+  color: var(--white);
+}
+
+.cc-modal .form-row { margin-bottom: 0; }
+
+.cc-modal-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.cc-modal-actions .btn { flex: 1; }
+
+/* baris yang sedang diedit ditandai sebentar */
+@keyframes editPulse {
+  0%, 100% { background: transparent; }
+  50%      { background: var(--pink-light); }
+}
+
+tr.row-editing {
+  animation: editPulse 1.2s ease;
+}
+
+/* tombol aksi kecil tambahan (edit/hapus) */
+.btn-edit {
+  background-color: #1565c0;
+  color: var(--white);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-edit:hover { background-color: #0d47a1; }
+
+.btn-hapus {
+  background-color: #6d2b4a;
+  color: var(--white);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-hapus:hover { background-color: #3b0a23; }
+
+/* micro hover bounce untuk emoji header */
+header h1 {
+  display: inline-block;
+}
+
+header h1:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* ============================================
+   POPUP NOTIFIKASI (untuk reservasi dibuat/dibatalkan)
+   ============================================ */
+.cc-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 10, 35, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 9995;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.cc-popup-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cc-popup-card {
+  background: var(--white);
+  border-radius: 22px;
+  padding: 2rem 1.8rem 1.7rem;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 22px 60px rgba(194,24,91,0.35);
+  border: 2px solid var(--pink-border);
+  transform: translateY(40px) scale(0.85);
+  opacity: 0;
+  transition: transform 0.38s cubic-bezier(.34,1.56,.64,1), opacity 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cc-popup-overlay.show .cc-popup-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.cc-popup-card.berhasil { border-color: #66bb6a; }
+.cc-popup-card.batal    { border-color: #ef9a9a; }
+
+.cc-popup-emoji {
+  font-size: 3.4rem;
+  margin-bottom: 0.6rem;
+  display: inline-block;
+  animation: popupBounce 0.7s ease 0.1s;
+}
+
+@keyframes popupBounce {
+  0%   { transform: scale(0) rotate(-15deg); }
+  55%  { transform: scale(1.25) rotate(8deg); }
+  75%  { transform: scale(0.92) rotate(-4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.cc-popup-card h3 {
+  font-family: var(--font-head);
+  color: var(--pink-deep);
+  font-size: 1.25rem;
+  margin-bottom: 0.55rem;
+}
+
+.cc-popup-card p {
+  color: var(--text-mid);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin-bottom: 1.4rem;
+}
+
+.cc-popup-card .cc-popup-kode {
+  display: inline-block;
+  background: var(--pink-light);
+  color: var(--pink-deep);
+  font-weight: 800;
+  padding: 0.25rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  margin: 0.3rem 0 1rem;
+  letter-spacing: 0.5px;
+}
+
+.cc-popup-card .btn {
+  width: 100%;
+}
+
+.cc-popup-ring {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244,143,177,0.35), transparent 70%);
+  animation: ccSpin2 6s linear infinite;
+}
+
+@keyframes ccSpin2 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ============================================
+   ANIMASI MENU LEBIH HIDUP 🧁🍵
+   ============================================ */
+.menu-card {
+  position: relative;
+}
+
+.menu-card .nama {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.menu-card:hover .nama {
+  animation: menuIconBounce 0.6s ease;
+}
+
+@keyframes menuIconBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30%      { transform: translateY(-5px) rotate(-4deg); }
+  60%      { transform: translateY(0) rotate(4deg); }
+}
+
+.menu-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.55) 45%, transparent 60%);
+  background-size: 250% 250%;
+  background-position: 120% 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.menu-card:hover::after {
+  opacity: 1;
+  animation: menuShine 1s ease forwards;
+}
+
+@keyframes menuShine {
+  from { background-position: 130% 0; }
+  to   { background-position: -30% 0; }
+}
+
+.menu-card .harga {
+  display: inline-block;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.menu-card:hover .harga {
+  transform: scale(1.12);
+  color: var(--pink-deep);
+}
+
+.menu-card.best::before {
+  animation: bestSellerPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes bestSellerPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.07); }
+}
+
+

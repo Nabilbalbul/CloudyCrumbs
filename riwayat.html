@@ -114,19 +114,19 @@
     <section class="mb-2" aria-label="Ringkasan Reservasi">
       <div class="grid-4">
         <div class="stat-box pink">
-          <span class="angka">12</span>
+          <span class="angka" id="statTotal">12</span>
           <span class="label">Total Reservasi</span>
         </div>
         <div class="stat-box green">
-          <span class="angka">8</span>
+          <span class="angka" id="statKonfirmasi">8</span>
           <span class="label">Terkonfirmasi</span>
         </div>
         <div class="stat-box yellow">
-          <span class="angka">2</span>
+          <span class="angka" id="statMenunggu">2</span>
           <span class="label">Menunggu</span>
         </div>
         <div class="stat-box red">
-          <span class="angka">2</span>
+          <span class="angka" id="statDibatalkan">2</span>
           <span class="label">Dibatalkan</span>
         </div>
       </div>
@@ -135,7 +135,7 @@
     <!-- Filter -->
     <section class="filter-card" aria-labelledby="judul-filter">
       <h2 id="judul-filter">🔍 Filter & Cari</h2>
-      <form action="#" method="get">
+      <form id="formFilter" action="#" method="get">
         <div class="filter-row">
           <div class="filter-group">
             <label for="cari-nama">Nama Tamu</label>
@@ -168,13 +168,16 @@
           <div>
             <button type="submit" class="btn btn-primary">Cari</button>
           </div>
+          <div>
+            <button type="button" id="btnResetFilter" class="btn btn-outline">Reset</button>
+          </div>
         </div>
       </form>
     </section>
 
     <!-- Tabel Riwayat -->
     <section class="tabel-card" aria-labelledby="judul-tabel">
-      <h2 id="judul-tabel">Daftar Reservasi</h2>
+      <h2 id="judul-tabel">Daftar Reservasi <span id="infoHasil" class="info-hasil"></span></h2>
 
       <div class="tabel-wrapper">
         <table>
@@ -191,7 +194,7 @@
               <th>Aksi</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tbodyRiwayat">
             <tr>
               <td>1</td>
               <td><strong>CC-001</strong></td>
@@ -343,5 +346,6 @@
     <p>Jl. Kopi Hangat No. 12, Medan Baru, Sumatera Utara</p>
   </footer>
 
+  <script src="script.js" defer></script>
 </body>
 </html>
