@@ -1376,6 +1376,78 @@ header h1:hover {
   animation: ccSpin2 6s linear infinite;
 }
 
+/* ── Confirm Popup (Hapus) ── */
+.cc-confirm-card {
+  border-color: #f48fb1 !important;
+}
+
+.cc-confirm-card h3 {
+  color: #c2185b;
+}
+
+.cc-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.cc-confirm-actions .btn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cc-btn-batalkan {
+  background: var(--pink-pale, #fce4ec);
+  color: var(--pink-deep, #c2185b);
+  border: 2px solid var(--pink-border, #f48fb1);
+}
+
+.cc-btn-batalkan:hover {
+  background: #f8bbd0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.2);
+}
+
+.cc-btn-hapus {
+  background: linear-gradient(135deg, #e53935, #c62828);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(229, 57, 53, 0.4);
+}
+
+.cc-btn-hapus:hover {
+  background: linear-gradient(135deg, #ef5350, #e53935);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(229, 57, 53, 0.5);
+}
+
+.cc-btn-hapus:active,
+.cc-btn-batalkan:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.cc-btn-batal-konfirmasi {
+  background: linear-gradient(135deg, #ffa726, #fb8c00);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(251, 140, 0, 0.4);
+}
+
+.cc-btn-batal-konfirmasi:hover {
+  background: linear-gradient(135deg, #ffb74d, #ff9800);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(251, 140, 0, 0.5);
+}
+
+.cc-btn-batal-konfirmasi:active {
+  transform: translateY(0) scale(0.97);
+}
+
 @keyframes ccSpin2 {
   from {
     transform: rotate(0deg);

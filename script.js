@@ -8,6 +8,7 @@
   "use strict";
 
   const STORAGE_KEY = "ccReservasi";
+  const SEED_OVERRIDE_KEY = "ccSeedOverrides";
 
   /* ------------------------------------------------------------
      0. UTIL
@@ -26,6 +27,59 @@
 
   function saveReservasi(list) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  // Data contoh (CC-001..CC-008) bersifat statis di kode, jadi perubahan
+  // (edit/batal/hapus) terhadapnya disimpan terpisah sebagai "override".
+  function getSeedOverrides() {
+    try {
+      const raw = localStorage.getItem(SEED_OVERRIDE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveSeedOverrides(map) {
+    localStorage.setItem(SEED_OVERRIDE_KEY, JSON.stringify(map));
+  }
+
+  function isSeedId(id) {
+    return id < 1000000;
+  }
+
+  // Update field-field record manapun (data contoh ataupun data baru),
+  // tersimpan permanen di localStorage masing-masing.
+  function updateRecord(id, fields) {
+    if (isSeedId(id)) {
+      const overrides = getSeedOverrides();
+      overrides[id] = { ...(overrides[id] || {}), ...fields };
+      saveSeedOverrides(overrides);
+    } else {
+      const semua = getReservasi();
+      const idx = semua.findIndex((r) => r.id === id);
+      if (idx !== -1) {
+        semua[idx] = { ...semua[idx], ...fields };
+        saveReservasi(semua);
+      }
+    }
+  }
+
+  // Hapus record manapun secara permanen (data contoh disembunyikan lewat flag,
+  // data baru dibuang langsung dari array tersimpan).
+  function deleteRecordById(id) {
+    if (isSeedId(id)) {
+      const overrides = getSeedOverrides();
+      overrides[id] = { ...(overrides[id] || {}), deleted: true };
+      saveSeedOverrides(overrides);
+    } else {
+      const semua = getReservasi();
+      const idx = semua.findIndex((r) => r.id === id);
+      if (idx !== -1) {
+        semua.splice(idx, 1);
+        saveReservasi(semua);
+      }
+    }
   }
 
   function buatKodeBaru(list) {
@@ -166,6 +220,99 @@
   }
 
   window.ccPopup = showPopup;
+
+  /* ------------------------------------------------------------
+     1a-2. POPUP KONFIRMASI HAPUS (cute confirm dialog) 🗑️🌸
+  ------------------------------------------------------------ */
+  function ensureConfirmPopup() {
+    let overlay = $("#ccConfirmPopup");
+    if (overlay) return overlay;
+
+    overlay = document.createElement("div");
+    overlay.id = "ccConfirmPopup";
+    overlay.className = "cc-popup-overlay";
+    overlay.innerHTML = `
+      <div class="cc-popup-card cc-confirm-card" id="ccConfirmCard">
+        <span class="cc-popup-ring"></span>
+        <div class="cc-popup-emoji" id="ccConfirmEmoji">🗑️</div>
+        <h3 id="ccConfirmTitle">Yakin mau hapus?</h3>
+        <p id="ccConfirmMsg">Tindakan ini tidak dapat dibatalkan.</p>
+        <span class="cc-popup-kode" id="ccConfirmKode" style="display:none;"></span>
+        <div class="cc-confirm-actions">
+          <button type="button" class="btn cc-btn-batalkan" id="ccConfirmCancel">✕ Jangan Dulu</button>
+          <button type="button" class="btn cc-btn-hapus" id="ccConfirmOk">🗑️ Hapus!</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const tutup = () => overlay.classList.remove("show");
+    $("#ccConfirmCancel", overlay).addEventListener("click", tutup);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") tutup(); });
+
+    return overlay;
+  }
+
+  function showConfirmPopup(opts) {
+    const {
+      title = "Yakin mau hapus? 🗑️",
+      message,
+      kode,
+      emoji = "🗑️",
+      okText = "🗑️ Hapus!",
+      cancelText = "✕ Jangan Dulu",
+      okClass = "cc-btn-hapus",
+      onConfirm,
+      onCancel,
+    } = opts;
+    const overlay = ensureConfirmPopup();
+
+    $("#ccConfirmTitle", overlay).textContent = title;
+    $("#ccConfirmMsg", overlay).innerHTML = message || "Tindakan ini <strong>tidak dapat dibatalkan</strong>. Data akan hilang selamanya! 💨";
+    $("#ccConfirmEmoji", overlay).textContent = emoji;
+
+    const kodeEl = $("#ccConfirmKode", overlay);
+    if (kode) {
+      kodeEl.textContent = kode;
+      kodeEl.style.display = "inline-block";
+    } else {
+      kodeEl.style.display = "none";
+    }
+
+    overlay.classList.add("show");
+
+    // bounce emoji ulang
+    const emojiEl = $("#ccConfirmEmoji", overlay);
+    emojiEl.style.animation = "none";
+    void emojiEl.offsetWidth;
+    emojiEl.style.animation = "";
+
+    const okBtn = $("#ccConfirmOk", overlay);
+    const cancelBtn = $("#ccConfirmCancel", overlay);
+
+    okBtn.textContent = okText;
+    okBtn.className = "btn " + okClass;
+    cancelBtn.textContent = cancelText;
+
+    const handleOk = () => {
+      overlay.classList.remove("show");
+      if (typeof onConfirm === "function") onConfirm();
+      okBtn.removeEventListener("click", handleOk);
+      cancelBtn.removeEventListener("click", handleCancel);
+    };
+    const handleCancel = () => {
+      overlay.classList.remove("show");
+      if (typeof onCancel === "function") onCancel();
+      okBtn.removeEventListener("click", handleOk);
+      cancelBtn.removeEventListener("click", handleCancel);
+    };
+
+    okBtn.addEventListener("click", handleOk);
+    cancelBtn.addEventListener("click", handleCancel);
+  }
+
+  window.ccConfirmPopup = showConfirmPopup;
 
   /* ------------------------------------------------------------
      1b. DEKORASI MENGAMBANG (pastry & bunga) 🧁🌸
@@ -422,9 +569,13 @@ if (inputTanggal) {
   ];
 
   function semuaData() {
-    // gabungkan data contoh (statis, tidak bisa dihapus permanen dari storage)
+    // gabungkan data contoh (statis) + override (edit/batal/hapus)-nya
     // dengan data baru yang dibuat lewat form reservasi
-    return seedData.concat(getReservasi());
+    const overrides = getSeedOverrides();
+    const seedAdjusted = seedData
+      .filter((r) => !(overrides[r.id] && overrides[r.id].deleted))
+      .map((r) => (overrides[r.id] ? { ...r, ...overrides[r.id] } : r));
+    return seedAdjusted.concat(getReservasi());
   }
 
   let baruDibuatId = null;
@@ -591,18 +742,12 @@ function updateKetersediaan() {
         const tr = document.createElement("tr");
         if (r.id === baruDibuatId) tr.classList.add("row-new");
 
-        const isSeed = r.id < 1000000; // data contoh punya id kecil (1-8), data baru pakai Date.now()
         let aksi = `<a href="#" class="btn btn-outline btn-sm" data-aksi="detail">Detail</a>`;
-
-        if (isSeed) {
-          aksi += `<button type="button" class="btn-edit" disabled title="Data contoh tidak dapat diedit" style="opacity:.5;cursor:not-allowed;">Edit</button>`;
-        } else {
-          aksi += `<button type="button" class="btn-edit" data-aksi="edit" data-id="${r.id}">Edit</button>`;
-          if (r.status !== "batal") {
-            aksi += `<a href="#" class="btn btn-danger" data-aksi="batal" data-id="${r.id}">Batal</a>`;
-          }
-          aksi += `<button type="button" class="btn-hapus" data-aksi="hapus" data-id="${r.id}">Hapus</button>`;
+        aksi += `<button type="button" class="btn-edit" data-aksi="edit" data-id="${r.id}">Edit</button>`;
+        if (r.status !== "batal") {
+          aksi += `<a href="#" class="btn btn-danger" data-aksi="batal" data-id="${r.id}">Batal</a>`;
         }
+        aksi += `<button type="button" class="btn-hapus" data-aksi="hapus" data-id="${r.id}">Hapus</button>`;
 
         tr.innerHTML = `
           <td>${idx + 1}</td>
@@ -755,12 +900,8 @@ function updateKetersediaan() {
       }
 
       const id = Number($("#edit-id", form).value);
-      const semua = getReservasi();
-      const idx = semua.findIndex((r) => r.id === id);
-      if (idx === -1) return;
-
-      semua[idx] = {
-        ...semua[idx],
+      const kode = $("#edit-id", form).dataset.kode || "";
+      const fields = {
         nama: $("#edit-nama", form).value.trim(),
         telepon: $("#edit-telepon", form).value.trim(),
         email: $("#edit-email", form).value.trim(),
@@ -772,14 +913,14 @@ function updateKetersediaan() {
         catatan: $("#edit-catatan", form).value.trim(),
       };
 
-      saveReservasi(semua);
+      updateRecord(id, fields);
       tutup();
       renderTabelRiwayat(ambilFilter());
 
       showToast({
         type: "success",
         title: "Reservasi diperbarui ✏️",
-        message: `Perubahan data ${semua[idx].kode} (${semua[idx].nama}) berhasil disimpan.`,
+        message: `Perubahan data ${kode} (${fields.nama}) berhasil disimpan.`,
         emoji: "💾",
       });
     });
@@ -790,6 +931,7 @@ function updateKetersediaan() {
   function bukaModalEdit(data) {
     const overlay = ensureModalEdit();
     $("#edit-id", overlay).value = data.id;
+    $("#edit-id", overlay).dataset.kode = data.kode || "";
     $("#edit-nama", overlay).value = data.nama || "";
     $("#edit-telepon", overlay).value = data.telepon || "";
     $("#edit-email", overlay).value = data.email || "";
@@ -850,38 +992,37 @@ function updateKetersediaan() {
 
       if (target.dataset.aksi === "batal") {
         const id = Number(target.dataset.id);
-        const semua = getReservasi();
-        const idx = semua.findIndex((r) => r.id === id);
+        const semua = semuaData();
+        const data = semua.find((r) => r.id === id);
+        if (!data) return;
 
-        if (idx === -1) {
-          showToast({
-            type: "info",
-            message: "Data contoh bawaan sistem tidak dapat dibatalkan, hanya reservasi baru yang bisa 🌸",
-          });
-          return;
-        }
-
-        const ok = window.confirm(`Batalkan reservasi ${semua[idx].kode} milik ${semua[idx].nama}?`);
-        if (!ok) return;
-
-        semua[idx].status = "batal";
-        saveReservasi(semua);
-        renderTabelRiwayat(ambilFilter());
-
-        showPopup({
-          jenis: "batal",
+        showConfirmPopup({
+          title: "Batalkan Reservasi? 📅",
+          message: `Batalkan reservasi <strong>${data.kode}</strong> milik <strong>${data.nama}</strong>?<br><br>Meja yang sudah dipesan akan dilepas dan status berubah jadi <em>Dibatalkan</em>.`,
+          kode: data.kode,
           emoji: "😢",
-          title: "Reservasi Dibatalkan",
-          message: `Reservasi <strong>${semua[idx].kode}</strong> milik ${semua[idx].nama} berhasil dibatalkan. Semoga lain kali bisa mampir lagi ya~`,
-          tombol: "Oke, Mengerti",
+          okText: "📅 Ya, Batalkan",
+          cancelText: "✕ Jangan Dulu",
+          okClass: "cc-btn-batal-konfirmasi",
+          onConfirm: () => {
+            updateRecord(id, { status: "batal" });
+            renderTabelRiwayat(ambilFilter());
+
+            showPopup({
+              jenis: "batal",
+              emoji: "😢",
+              title: "Reservasi Dibatalkan",
+              message: `Reservasi <strong>${data.kode}</strong> milik ${data.nama} berhasil dibatalkan. Semoga lain kali bisa mampir lagi ya~`,
+              tombol: "Oke, Mengerti",
+            });
+          },
         });
         return;
       }
 
       if (target.dataset.aksi === "edit") {
         const id = Number(target.dataset.id);
-        const semua = getReservasi();
-        const data = semua.find((r) => r.id === id);
+        const data = semuaData().find((r) => r.id === id);
         if (!data) return;
         bukaModalEdit(data);
         return;
@@ -889,23 +1030,24 @@ function updateKetersediaan() {
 
       if (target.dataset.aksi === "hapus") {
         const id = Number(target.dataset.id);
-        const semua = getReservasi();
-        const idx = semua.findIndex((r) => r.id === id);
-        if (idx === -1) return;
+        const data = semuaData().find((r) => r.id === id);
+        if (!data) return;
 
-        const data = semua[idx];
-        const ok = window.confirm(`Hapus permanen reservasi ${data.kode} milik ${data.nama}? Tindakan ini tidak dapat dibatalkan.`);
-        if (!ok) return;
+        showConfirmPopup({
+          title: "Hapus Reservasi? 🗑️",
+          message: `Yakin ingin menghapus reservasi <strong>${data.kode}</strong> milik <strong>${data.nama}</strong>?<br><br>Data akan hilang <em>selamanya</em> dan tidak bisa dikembalikan lagi! 💨`,
+          kode: data.kode,
+          onConfirm: () => {
+            deleteRecordById(id);
+            renderTabelRiwayat(ambilFilter());
 
-        semua.splice(idx, 1);
-        saveReservasi(semua);
-        renderTabelRiwayat(ambilFilter());
-
-        showToast({
-          type: "info",
-          title: "Reservasi dihapus 🗑️",
-          message: `Data ${data.kode} (${data.nama}) telah dihapus permanen dari riwayat.`,
-          emoji: "🗑️",
+            showToast({
+              type: "info",
+              title: "Reservasi dihapus 🗑️",
+              message: `Data ${data.kode} (${data.nama}) telah dihapus permanen dari riwayat.`,
+              emoji: "🗑️",
+            });
+          },
         });
       }
     });
