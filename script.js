@@ -115,6 +115,32 @@
   }
 
   /* ------------------------------------------------------------
+     0b. OFFSET NAVBAR (supaya popup/modal/notifikasi muncul
+         di bawah navbar — bukan ketimpa navbar, termasuk saat discroll)
+  ------------------------------------------------------------ */
+  function updateNavOffset() {
+    const nav = document.querySelector("nav");
+    if (!nav) return;
+    const bottom = Math.max(0, Math.round(nav.getBoundingClientRect().bottom));
+    document.documentElement.style.setProperty("--cc-nav-h", bottom + "px");
+  }
+
+  let navOffsetTicking = false;
+  function requestNavOffsetUpdate() {
+    if (navOffsetTicking) return;
+    navOffsetTicking = true;
+    requestAnimationFrame(() => {
+      updateNavOffset();
+      navOffsetTicking = false;
+    });
+  }
+
+  updateNavOffset();
+  window.addEventListener("load", updateNavOffset);
+  window.addEventListener("resize", requestNavOffsetUpdate);
+  window.addEventListener("scroll", requestNavOffsetUpdate, { passive: true });
+
+  /* ------------------------------------------------------------
      1. TOAST NOTIFIKASI (super cute 🌸)
   ------------------------------------------------------------ */
   function ensureToastWrap() {
@@ -129,6 +155,7 @@
 
   function showToast(opts) {
     const { title, message, type = "info", emoji, duration = 3600 } = opts;
+    updateNavOffset();
     const wrap = ensureToastWrap();
 
     const emojiMap = { success: "🎉", error: "🙁", info: "🌸" };
@@ -208,6 +235,7 @@
       kodeEl.style.display = "none";
     }
 
+    updateNavOffset();
     overlay.classList.add("show");
 
     const okBtn = $("#ccPopupOk", overlay);
@@ -280,6 +308,7 @@
       kodeEl.style.display = "none";
     }
 
+    updateNavOffset();
     overlay.classList.add("show");
 
     // bounce emoji ulang
@@ -430,37 +459,42 @@
     group.classList.remove("field-error");
   }
 
+  function validasiField(input) {
+    if (!input.hasAttribute("required") && input.value.trim() === "") {
+      return "";
+    }
+
+    if (input.hasAttribute("required") && input.value.trim() === "") {
+      return "Wah, bagian ini belum diisi nih 🌸";
+    }
+
+    if (input.type === "tel" && input.value.trim() !== "") {
+      const bersih = input.value.replace(/[\s-]/g, "");
+      if (!/^0[0-9]{9,13}$/.test(bersih)) {
+        return "Nomor telepon-nya kayaknya belum pas, coba cek lagi ya";
+      }
+    } else if (input.type === "email" && input.value.trim() !== "") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) {
+        return "Format emailnya kurang pas nih";
+      }
+    } else if (input.type === "date" && input.value) {
+      const dipilih = new Date(input.value + "T00:00:00");
+      const hariIni = new Date();
+      hariIni.setHours(0, 0, 0, 0);
+      if (dipilih < hariIni) {
+        return "Tanggalnya sudah lewat, pilih tanggal hari ini atau setelahnya ya";
+      }
+    }
+
+    return "";
+  }
+
   function validasiForm(form) {
     let valid = true;
     let firstInvalid = null;
 
     $all("input, select, textarea", form).forEach((input) => {
-      if (!input.hasAttribute("required") && input.value.trim() === "") {
-        hapusError(input);
-        return;
-      }
-
-      let pesan = "";
-      if (input.hasAttribute("required") && input.value.trim() === "") {
-        pesan = "Wah, bagian ini belum diisi nih 🌸";
-      } else if (input.type === "tel" && input.value.trim() !== "") {
-        const bersih = input.value.replace(/[\s-]/g, "");
-        if (!/^0[0-9]{9,13}$/.test(bersih)) {
-          pesan = "Nomor telepon-nya kayaknya belum pas, coba cek lagi ya";
-        }
-      } else if (input.type === "email" && input.value.trim() !== "") {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) {
-          pesan = "Format emailnya kurang pas nih";
-        }
-      } else if (input.type === "date" && input.value) {
-        const dipilih = new Date(input.value + "T00:00:00");
-        const hariIni = new Date();
-        hariIni.setHours(0, 0, 0, 0);
-        if (dipilih < hariIni) {
-          pesan = "Tanggalnya sudah lewat, pilih tanggal hari ini atau setelahnya ya";
-        }
-      }
-
+      const pesan = validasiField(input);
       if (pesan) {
         valid = false;
         tampilkanError(input, pesan);
@@ -474,9 +508,20 @@
     return valid;
   }
 
+  // Validasi hanya field yang sedang disentuh — supaya user bebas
+  // mengisi form dari bagian mana saja tanpa dipaksa urut.
+  function validasiSatuField(input) {
+    const pesan = validasiField(input);
+    if (pesan) {
+      tampilkanError(input, pesan);
+    } else {
+      hapusError(input);
+    }
+  }
+
   function setupLiveValidation(form) {
     $all("input, select, textarea", form).forEach((input) => {
-      input.addEventListener("blur", () => validasiForm(form));
+      input.addEventListener("blur", () => validasiSatuField(input));
       input.addEventListener("input", () => {
         if (input.closest(".form-group").classList.contains("field-error")) {
           hapusError(input);
@@ -558,14 +603,14 @@ if (inputTanggal) {
      5. HALAMAN: riwayat.html → render tabel, filter, hapus
   ------------------------------------------------------------ */
   const seedData = [
-    { id: 1, kode: "CC-001", nama: "Andi Wirawan", tanggal: "2025-04-15", waktu: "12:00", tamu: "4", area: "indoor", status: "selesai" },
-    { id: 2, kode: "CC-002", nama: "Sari Dewi", tanggal: "2025-04-18", waktu: "19:00", tamu: "2", area: "outdoor", status: "konfirmasi" },
-    { id: 3, kode: "CC-003", nama: "Rudi Hartono", tanggal: "2025-04-20", waktu: "10:00", tamu: "6", area: "vip", status: "konfirmasi" },
-    { id: 4, kode: "CC-004", nama: "Maya Putri", tanggal: "2025-04-22", waktu: "14:00", tamu: "3", area: "indoor", status: "menunggu" },
-    { id: 5, kode: "CC-005", nama: "Budi Santoso", tanggal: "2025-04-10", waktu: "08:00", tamu: "1", area: "indoor", status: "batal" },
-    { id: 6, kode: "CC-006", nama: "Lina Marlina", tanggal: "2025-04-25", waktu: "18:00", tamu: "5", area: "outdoor", status: "menunggu" },
-    { id: 7, kode: "CC-007", nama: "Hendra Pratama", tanggal: "2025-04-28", waktu: "13:00", tamu: "2", area: "vip", status: "konfirmasi" },
-    { id: 8, kode: "CC-008", nama: "Dian Rahayu", tanggal: "2025-04-05", waktu: "16:00", tamu: "4", area: "indoor", status: "selesai" },
+    { id: 1, kode: "CC-001", nama: "Andi Wirawan", tanggal: "2026-04-15", waktu: "12:00", tamu: "4", area: "indoor", status: "selesai" },
+    { id: 2, kode: "CC-002", nama: "Sari Dewi", tanggal: "2026-04-18", waktu: "19:00", tamu: "2", area: "outdoor", status: "konfirmasi" },
+    { id: 3, kode: "CC-003", nama: "Rudi Hartono", tanggal: "2026-04-20", waktu: "10:00", tamu: "6", area: "vip", status: "konfirmasi" },
+    { id: 4, kode: "CC-004", nama: "Maya Putri", tanggal: "2026-04-22", waktu: "14:00", tamu: "3", area: "indoor", status: "menunggu" },
+    { id: 5, kode: "CC-005", nama: "Budi Santoso", tanggal: "2026-04-10", waktu: "08:00", tamu: "1", area: "indoor", status: "batal" },
+    { id: 6, kode: "CC-006", nama: "Lina Marlina", tanggal: "2026-04-25", waktu: "18:00", tamu: "5", area: "outdoor", status: "menunggu" },
+    { id: 7, kode: "CC-007", nama: "Hendra Pratama", tanggal: "2026-04-28", waktu: "13:00", tamu: "2", area: "vip", status: "konfirmasi" },
+    { id: 8, kode: "CC-008", nama: "Dian Rahayu", tanggal: "2026-04-05", waktu: "16:00", tamu: "4", area: "indoor", status: "selesai" },
   ];
 
   function semuaData() {
@@ -742,7 +787,7 @@ function updateKetersediaan() {
         const tr = document.createElement("tr");
         if (r.id === baruDibuatId) tr.classList.add("row-new");
 
-        let aksi = `<a href="#" class="btn btn-outline btn-sm" data-aksi="detail">Detail</a>`;
+        let aksi = `<a href="#" class="btn btn-outline btn-sm" data-aksi="detail" data-id="${r.id}">Detail</a>`;
         aksi += `<button type="button" class="btn-edit" data-aksi="edit" data-id="${r.id}">Edit</button>`;
         if (r.status !== "batal") {
           aksi += `<a href="#" class="btn btn-danger" data-aksi="batal" data-id="${r.id}">Batal</a>`;
@@ -928,6 +973,152 @@ function updateKetersediaan() {
     return overlay;
   }
 
+  /* -------- Modal Detail Reservasi (lengkap & jelas, tidak terpotong) -------- */
+  function ensureModalDetail() {
+    let overlay = $("#ccModalDetail");
+    if (overlay) return overlay;
+
+    overlay = document.createElement("div");
+    overlay.id = "ccModalDetail";
+    overlay.className = "cc-modal-overlay";
+    overlay.innerHTML = `
+      <div class="cc-modal cc-modal-detail" role="dialog" aria-modal="true" aria-labelledby="ccDetailTitle">
+        <div class="cc-modal-header">
+          <h2 id="ccDetailTitle">📋 Detail Reservasi</h2>
+          <button type="button" class="cc-modal-close" id="ccDetailCloseBtn" aria-label="Tutup">✕</button>
+        </div>
+        <div class="cc-detail-body" id="ccDetailBody"></div>
+        <div class="cc-modal-actions">
+          <button type="button" class="btn btn-outline" id="ccDetailCloseBtn2">Tutup</button>
+          <button type="button" class="btn btn-outline" id="ccDetailPrintBtn">🖨️ Cetak Bukti</button>
+          <button type="button" class="btn btn-primary" id="ccDetailEditBtn">✏️ Edit Reservasi</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const tutup = () => overlay.classList.remove("show");
+    $("#ccDetailCloseBtn", overlay).addEventListener("click", tutup);
+    $("#ccDetailCloseBtn2", overlay).addEventListener("click", tutup);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") tutup(); });
+
+    return overlay;
+  }
+
+  function bukaModalDetail(data) {
+    const overlay = ensureModalDetail();
+    const body = $("#ccDetailBody", overlay);
+
+    const baris = [
+      ["Kode Reservasi", `<strong>${data.kode}</strong>`],
+      ["Status", badgeStatus(data.status)],
+      ["Nama Lengkap", data.nama || "-"],
+      ["No. Telepon", data.telepon || "-"],
+      ["Alamat Email", data.email || "-"],
+      ["Tanggal Kunjungan", formatTanggal(data.tanggal)],
+      ["Jam Kunjungan", (data.waktu || "-").replace(":", ".") + (data.waktu ? " WIB" : "")],
+      ["Jumlah Tamu", data.tamu ? `${data.tamu} orang` : "-"],
+      ["Area Tempat Duduk", labelArea(data.area)],
+      ["Jenis Acara", data.acara ? ({
+        santai: "Kunjungan Biasa", ultah: "Ulang Tahun", meeting: "Pertemuan Kerja",
+        kencan: "Kencan / Perayaan", keluarga: "Makan Keluarga", lainnya: "Lainnya",
+      }[data.acara] || data.acara) : "-"],
+      ["Catatan / Permintaan Khusus", data.catatan ? data.catatan : "Tidak ada catatan khusus"],
+    ];
+
+    body.innerHTML = baris.map(([label, val]) => `
+      <div class="cc-detail-row">
+        <span class="cc-detail-label">${label}</span>
+        <span class="cc-detail-value">${val}</span>
+      </div>
+    `).join("");
+
+    const btnEdit = $("#ccDetailEditBtn", overlay);
+    btnEdit.onclick = () => {
+      overlay.classList.remove("show");
+      bukaModalEdit(data);
+    };
+
+    const btnPrint = $("#ccDetailPrintBtn", overlay);
+    btnPrint.onclick = () => cetakBuktiReservasi(data);
+
+    updateNavOffset();
+    overlay.classList.add("show");
+  }
+
+  /* -------- Cetak Bukti Reservasi (struk satuan, rapi & ringkas) -------- */
+  function cetakBuktiReservasi(data) {
+    const acaraMap = {
+      santai: "Kunjungan Biasa", ultah: "Ulang Tahun", meeting: "Pertemuan Kerja",
+      kencan: "Kencan / Perayaan", keluarga: "Makan Keluarga", lainnya: "Lainnya",
+    };
+
+    const jendela = window.open("", "_blank", "width=420,height=640");
+    if (!jendela) {
+      showToast({ type: "error", title: "Pop-up diblokir", message: "Izinkan pop-up untuk mencetak bukti reservasi ya 🙏", emoji: "🙈" });
+      return;
+    }
+
+    const html = `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Bukti Reservasi ${data.kode}</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #3b0a23;
+    padding: 1.75rem 1.5rem;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .kepala { text-align: center; margin-bottom: 1.25rem; }
+  .kepala h1 { font-size: 1.3rem; color: #c2185b; margin-bottom: 0.2rem; }
+  .kepala p { font-size: 0.78rem; color: #9c4070; }
+  .garis { border: none; border-top: 2px dashed #f48fb1; margin: 1rem 0; }
+  .kode { text-align: center; font-size: 1.05rem; font-weight: 700; color: #c2185b; letter-spacing: 1px; margin-bottom: 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  table td { padding: 0.4rem 0; vertical-align: top; }
+  table td:first-child { color: #9c4070; width: 42%; }
+  table td:last-child { font-weight: 600; }
+  .kaki { text-align: center; margin-top: 1.4rem; font-size: 0.76rem; color: #9c4070; line-height: 1.6; }
+  @media print { body { padding: 0.5rem; } }
+</style>
+</head>
+<body>
+  <div class="kepala">
+    <h1>🌸 Cloudy Crumbs</h1>
+    <p>Bukti Reservasi Meja</p>
+  </div>
+  <hr class="garis" />
+  <div class="kode">${data.kode}</div>
+  <table>
+    <tr><td>Nama Tamu</td><td>${data.nama || "-"}</td></tr>
+    <tr><td>No. Telepon</td><td>${data.telepon || "-"}</td></tr>
+    <tr><td>Tanggal</td><td>${formatTanggal(data.tanggal)}</td></tr>
+    <tr><td>Jam</td><td>${(data.waktu || "-").replace(":", ".")} WIB</td></tr>
+    <tr><td>Jumlah Tamu</td><td>${data.tamu ? data.tamu + " orang" : "-"}</td></tr>
+    <tr><td>Area</td><td>${labelArea(data.area)}</td></tr>
+    <tr><td>Jenis Acara</td><td>${acaraMap[data.acara] || "-"}</td></tr>
+  </table>
+  <hr class="garis" />
+  <div class="kaki">
+    Tunjukkan bukti ini saat kedatangan.<br>
+    Jl. Kopi Hangat No. 12, Medan Baru, Sumatera Utara<br>
+    WhatsApp: 0812-3456-7890
+  </div>
+</body>
+</html>`;
+
+    jendela.document.open();
+    jendela.document.write(html);
+    jendela.document.close();
+    jendela.focus();
+    setTimeout(() => jendela.print(), 300);
+  }
+
   function bukaModalEdit(data) {
     const overlay = ensureModalEdit();
     $("#edit-id", overlay).value = data.id;
@@ -943,6 +1134,7 @@ function updateKetersediaan() {
     $("#edit-catatan", overlay).value = data.catatan || "";
 
     $all(".form-group", overlay).forEach(hapusError);
+    updateNavOffset();
     overlay.classList.add("show");
     setTimeout(() => $("#edit-nama", overlay).focus(), 200);
   }
@@ -982,11 +1174,10 @@ function updateKetersediaan() {
       e.preventDefault();
 
       if (target.dataset.aksi === "detail") {
-        showToast({
-          type: "info",
-          title: "Detail Reservasi",
-          message: "Fitur detail lengkap akan segera tersedia. Untuk sekarang, info dapat dilihat langsung di tabel ya 🌸",
-        });
+        const id = Number(target.dataset.id);
+        const data = semuaData().find((r) => r.id === id);
+        if (!data) return;
+        bukaModalDetail(data);
         return;
       }
 
@@ -1083,6 +1274,74 @@ function updateKetersediaan() {
   }
 
   /* ------------------------------------------------------------
+     6d. HALAMAN: beranda.html → pencarian & filter kategori menu
+  ------------------------------------------------------------ */
+  function setupMenuToolbar() {
+    const grid = $("#menuGrid");
+    if (!grid) return;
+
+    const kartu = $all(".menu-card", grid);
+    const input = $("#menuSearchInput");
+    const tabs = $all(".menu-tab");
+    const emptyState = $("#menuEmptyState");
+    let kategoriAktif = "semua";
+
+    function terapkanFilter() {
+      const q = (input && input.value ? input.value : "").toLowerCase().trim();
+      let tampil = 0;
+
+      kartu.forEach((card) => {
+        const namaEl = card.querySelector(".nama");
+        const ketEl = card.querySelector(".keterangan");
+        const nama = (namaEl ? namaEl.textContent : "").toLowerCase();
+        const ket = (ketEl ? ketEl.textContent : "").toLowerCase();
+        const kategori = card.dataset.kategori || "semua";
+
+        const cocokKategori = kategoriAktif === "semua" || kategori === kategoriAktif;
+        const cocokCari = !q || nama.includes(q) || ket.includes(q);
+
+        if (cocokKategori && cocokCari) {
+          card.classList.remove("hide");
+          tampil++;
+        } else {
+          card.classList.add("hide");
+        }
+      });
+
+      if (emptyState) emptyState.classList.toggle("show", tampil === 0);
+    }
+
+    if (input) input.addEventListener("input", terapkanFilter);
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", function () {
+        tabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        kategoriAktif = tab.dataset.kategori || "semua";
+        terapkanFilter();
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------
+     6e. HALAMAN: beranda.html → FAQ accordion
+  ------------------------------------------------------------ */
+  function setupFaq() {
+    const items = $all(".faq-item");
+    if (!items.length) return;
+
+    items.forEach((item) => {
+      const btn = $(".faq-question", item);
+      if (!btn) return;
+      btn.addEventListener("click", function () {
+        const sedangTerbuka = item.classList.contains("open");
+        items.forEach((i) => i.classList.remove("open"));
+        if (!sedangTerbuka) item.classList.add("open");
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------
      7. INIT
   ------------------------------------------------------------ */
   document.addEventListener("DOMContentLoaded", function () {
@@ -1096,8 +1355,12 @@ function updateKetersediaan() {
     // menambahkan fitur meja real time dan tanggal (dementhia)
     updateKetersediaan();
 
-    // sapaan kecil saat halaman dibuka (sekali per sesi biar tidak mengganggu)
-    if (!sessionStorage.getItem("ccSudahSapa")) {
+    // fitur-fitur baru 2026 ✨
+    setupMenuToolbar();
+    setupFaq();
+
+    // sapaan kecil saat halaman dibuka — HANYA di halaman Beranda
+    if ($(".hero")) {
       setTimeout(() => {
         showToast({
           type: "info",
@@ -1106,7 +1369,6 @@ function updateKetersediaan() {
           duration: 4200,
         });
       }, 500);
-      sessionStorage.setItem("ccSudahSapa", "1");
     }
   });
 

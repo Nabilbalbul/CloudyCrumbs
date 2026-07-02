@@ -123,8 +123,10 @@
 
   <!-- Hamburger menu mobile (dementhia) -->
 <header style="position:relative;">
-  <h1>🌸 Cloudy Crumbs</h1>
-  <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
+  <div class="header-inner">
+    <h1>🌸 Cloudy Crumbs</h1>
+    <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
+  </div>
   <button class="hamburger" id="hamburgerBtn" aria-label="Buka menu">
     <span></span>
     <span></span>
@@ -185,64 +187,158 @@
     <!-- Menu Unggulan -->
     <section class="mb-2" aria-labelledby="judul-menu">
       <h2 class="section-heading" id="judul-menu">🍰 Menu Unggulan</h2>
-      <div class="grid-3">
+      <p class="section-sub">Cari menu favoritmu atau saring berdasarkan kategori di bawah ini 👇</p>
+
+      <div class="menu-toolbar">
+        <div class="menu-search">
+          <input type="text" id="menuSearchInput" placeholder="Cari nama menu, mis. matcha, cokelat..." aria-label="Cari menu" />
+        </div>
+        <div class="menu-tabs" role="tablist" aria-label="Filter kategori menu">
+          <button type="button" class="menu-tab active" data-kategori="semua">🍽️ Semua</button>
+          <button type="button" class="menu-tab" data-kategori="cupcake">🧁 Cupcake</button>
+          <button type="button" class="menu-tab" data-kategori="tea">🍵 Tea</button>
+        </div>
+      </div>
+
+      <div class="grid-3" id="menuGrid">
 
   <!-- CUPCAKE -->
-  <article class="menu-card best">
+  <article class="menu-card best" data-kategori="cupcake">
     <span class="nama">🧁 Strawberry Cream Cupcake</span>
     <span class="harga">Rp 28.000</span>
+    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.9)</span></span>
     <span class="keterangan">Cupcake lembut dengan krim strawberry manis segar.</span>
   </article>
 
-  <article class="menu-card">
+  <article class="menu-card" data-kategori="cupcake">
     <span class="nama">🧁 Chocolate Lava Cupcake</span>
     <span class="harga">Rp 30.000</span>
+    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.7)</span></span>
     <span class="keterangan">Cokelat lumer di dalam, favorit pecinta manis.</span>
   </article>
 
-  <article class="menu-card best">
+  <article class="menu-card best" data-kategori="cupcake">
     <span class="nama">🧁 Vanilla Berry Cupcake</span>
     <span class="harga">Rp 27.000</span>
+    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.8)</span></span>
     <span class="keterangan">Vanilla soft cake dengan topping blueberry & raspberry.</span>
   </article>
 
   <!-- TEA -->
-  <article class="menu-card best">
+  <article class="menu-card best" data-kategori="tea">
     <span class="nama">🍵 Matcha Latte Creamy</span>
     <span class="harga">Rp 34.000</span>
+    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.9)</span></span>
     <span class="keterangan">Matcha Jepang dengan susu creamy dan foam lembut.</span>
   </article>
 
-  <article class="menu-card">
+  <article class="menu-card" data-kategori="tea">
     <span class="nama">🍋 Lemon Tea Fresh</span>
     <span class="harga">Rp 22.000</span>
+    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.5)</span></span>
     <span class="keterangan">Teh segar dengan perasan lemon asli, dingin & refreshing.</span>
   </article>
 
-  <article class="menu-card best">
+  <article class="menu-card best" data-kategori="tea">
     <span class="nama">🌸 Rose Milk Tea</span>
     <span class="harga">Rp 29.000</span>
+    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.8)</span></span>
     <span class="keterangan">Milk tea dengan aroma mawar yang soft & calming.</span>
   </article>
 
-  <article class="menu-card">
+  <article class="menu-card" data-kategori="tea">
     <span class="nama">🧋 Brown Sugar Milk Tea</span>
     <span class="harga">Rp 31.000</span>
+    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.6)</span></span>
     <span class="keterangan">Milk tea manis dengan brown sugar caramel khas.</span>
   </article>
 
-  <article class="menu-card">
+  <article class="menu-card" data-kategori="tea">
     <span class="nama">🍑 Peach Iced Tea</span>
     <span class="harga">Rp 26.000</span>
+    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.4)</span></span>
     <span class="keterangan">Teh dingin dengan rasa peach yang manis segar.</span>
   </article>
 
-  <article class="menu-card best">
+  <article class="menu-card best" data-kategori="cupcake">
     <span class="nama">🍫 Choco Hazelnut Cupcake</span>
     <span class="harga">Rp 32.000</span>
+    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.9)</span></span>
     <span class="keterangan">Cupcake cokelat dengan krim hazelnut premium.</span>
   </article>
 </div>
+      <p class="menu-empty" id="menuEmptyState">🌸 Menu tidak ditemukan. Coba kata kunci atau kategori lain ya~</p>
+    </section>
+
+    <!-- Testimoni Pelanggan -->
+    <section class="mb-2" aria-labelledby="judul-testimoni">
+      <h2 class="section-heading" id="judul-testimoni">💬 Apa Kata Mereka</h2>
+      <div class="testimoni-grid">
+        <article class="testimoni-card">
+          <span class="bintang">★★★★★</span>
+          <p class="isi">"Cupcake-nya lembut banget dan suasananya cozy, cocok buat kerja santai sambil ngeteh."</p>
+          <div class="penulis">
+            <span class="testimoni-avatar">R</span>
+            <div>
+              <div class="testimoni-nama">Rani A.</div>
+              <div class="testimoni-sub">Pelanggan Tetap</div>
+            </div>
+          </div>
+        </article>
+        <article class="testimoni-card">
+          <span class="bintang">★★★★★</span>
+          <p class="isi">"Reservasinya gampang banget lewat website, pas datang meja langsung siap. Recommended!"</p>
+          <div class="penulis">
+            <span class="testimoni-avatar">F</span>
+            <div>
+              <div class="testimoni-nama">Fajar S.</div>
+              <div class="testimoni-sub">Kunjungan Keluarga</div>
+            </div>
+          </div>
+        </article>
+        <article class="testimoni-card">
+          <span class="bintang">★★★★☆</span>
+          <p class="isi">"Matcha latte-nya juara, area outdoornya juga adem buat nongkrong sore-sore."</p>
+          <div class="penulis">
+            <span class="testimoni-avatar">D</span>
+            <div>
+              <div class="testimoni-nama">Dinda P.</div>
+              <div class="testimoni-sub">Pelanggan Baru</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mb-2" aria-labelledby="judul-faq">
+      <h2 class="section-heading" id="judul-faq">❓ Pertanyaan yang Sering Ditanyakan</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button type="button" class="faq-question">Apakah reservasi bisa dibatalkan?
+            <span class="ikon">+</span>
+          </button>
+          <div class="faq-answer">Bisa. Pembatalan dapat dilakukan maksimal 1 jam sebelum jadwal kunjungan melalui halaman Riwayat Reservasi.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question">Apakah ada biaya untuk reservasi meja?
+            <span class="ikon">+</span>
+          </button>
+          <div class="faq-answer">Tidak ada biaya reservasi sama sekali. Kamu hanya perlu membayar makanan dan minuman yang dipesan saat berkunjung.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question">Bagaimana jika saya terlambat datang?
+            <span class="ikon">+</span>
+          </button>
+          <div class="faq-answer">Meja akan ditahan selama 15 menit dari jam reservasi. Jika lebih dari itu, meja bisa dialihkan ke tamu lain.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question">Apakah Cloudy Crumbs menerima pre-order kue?
+            <span class="ikon">+</span>
+          </button>
+          <div class="faq-answer">Tentu! Kamu bisa menghubungi kami via WhatsApp untuk pre-order kue ulang tahun atau pastri untuk acara khusus.</div>
+        </div>
+      </div>
     </section>
 
     <!-- Jam Operasional (Tabel) -->
@@ -297,8 +393,28 @@
   </main>
 
   <footer>
-    <p>&copy; 2025 Cloudy Crumbs. Semua hak dilindungi.</p>
-    <p>Jl. Kopi Hangat No. 12, Medan Baru, Sumatera Utara</p>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>🌸 Cloudy Crumbs</h4>
+        <p>Kafe & bakeri hangat sejak 2019, tempat cookies fresh dan tea bertemu suasana nyaman.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigasi</h4>
+        <a href="beranda.html">Beranda</a>
+        <a href="booking.html">Reservasi</a>
+        <a href="riwayat.html">Riwayat</a>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <a href="tel:0611234567">(061) 123-4567</a>
+        <a href="https://wa.me/6281234567890">WhatsApp: 0812-3456-7890</a>
+        <a href="mailto:hello@cloudycrumbs.id">hello@cloudycrumbs.id</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Cloudy Crumbs. Semua hak dilindungi.</p>
+      <p>Jl. Kopi Hangat No. 12, Medan Baru, Sumatera Utara 20154</p>
+    </div>
   </footer>
 
   <script src="script.js" defer></script>
