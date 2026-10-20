@@ -6,6 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cloudy Crumbs – Reservasi</title>
   <link rel="stylesheet" href="style.css" />
+  <script>
+    // Halaman ini hanya untuk pengguna yang sudah login
+    (function () {
+      try {
+        var s = sessionStorage.getItem("ccSession") || localStorage.getItem("ccSession");
+        if (!s) {
+          document.documentElement.style.visibility = "hidden";
+          var f = location.pathname.split("/").pop() || "index.html";
+          location.replace("index.html?next=" + encodeURIComponent(f));
+        }
+      } catch (e) { }
+    })();
+  </script>
   <style>
     /* ── Badge ketersediaan ── */
     .badge-tersedia {
@@ -62,7 +75,7 @@
 
   <nav aria-label="Menu Utama">
     <ul>
-      <li><a href="index.html">Beranda</a></li>
+      <li><a href="beranda.html">Beranda</a></li>
       <li><a href="booking.html" class="active">Reservasi</a></li>
       <li><a href="riwayat.html">Riwayat</a></li>
     </ul>
@@ -94,8 +107,8 @@
                 <input type="tel" id="telepon" name="telepon" placeholder="08xx-xxxx-xxxx" required />
               </div>
               <div class="form-group">
-                <label for="email">Alamat Email</label>
-                <input type="email" id="email" name="email" placeholder="contoh@email.com" />
+                <label for="email">Alamat Email *</label>
+                <input type="email" id="email" name="email" placeholder="contoh@email.com" required />
               </div>
             </div>
 

@@ -6,6 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cloudy Crumbs – Riwayat Reservasi</title>
   <link rel="stylesheet" href="style.css" />
+  <script>
+    // Halaman ini hanya untuk pengguna yang sudah login
+    (function () {
+      try {
+        var s = sessionStorage.getItem("ccSession") || localStorage.getItem("ccSession");
+        if (!s) {
+          document.documentElement.style.visibility = "hidden";
+          var f = location.pathname.split("/").pop() || "index.html";
+          location.replace("index.html?next=" + encodeURIComponent(f));
+        }
+      } catch (e) { }
+    })();
+  </script>
   <style>
     /* ── Stat box warna-warni ── */
     .stat-box.pink {
@@ -131,7 +144,7 @@
 
   <nav aria-label="Menu Utama">
     <ul>
-      <li><a href="index.html">Beranda</a></li>
+      <li><a href="beranda.html">Beranda</a></li>
       <li><a href="booking.html">Reservasi</a></li>
       <li><a href="riwayat.html" class="active">Riwayat</a></li>
     </ul>
@@ -145,11 +158,11 @@
     <section class="mb-2" aria-label="Ringkasan Reservasi">
       <div class="grid-4">
         <div class="stat-box pink">
-          <span class="angka" id="statTotal">12</span>
+          <span class="angka" id="statTotal">8</span>
           <span class="label">Total Reservasi</span>
         </div>
         <div class="stat-box green">
-          <span class="angka" id="statKonfirmasi">8</span>
+          <span class="angka" id="statKonfirmasi">5</span>
           <span class="label">Terkonfirmasi</span>
         </div>
         <div class="stat-box yellow">
@@ -157,7 +170,7 @@
           <span class="label">Menunggu</span>
         </div>
         <div class="stat-box red">
-          <span class="angka" id="statDibatalkan">2</span>
+          <span class="angka" id="statDibatalkan">1</span>
           <span class="label">Dibatalkan</span>
         </div>
       </div>

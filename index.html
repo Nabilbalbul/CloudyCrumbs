@@ -1,664 +1,165 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cloudy Crumbs – Beranda</title>
+  <title>Cloudy Crumbs – Login</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ── Hero ── */
-    .hero {
-      background: linear-gradient(135deg, var(--pink-deep) 0%, var(--pink-main) 60%, var(--pink-mid) 100%);
-      border-radius: 16px;
-      padding: 2.5rem 2rem;
+    .login-wrap {
+      max-width: 440px;
+      margin: 1rem auto;
+    }
+
+    .login-card {
       text-align: center;
-      color: var(--white);
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 20px var(--shadow);
     }
 
-    .hero h2 {
-      font-family: var(--font-head);
-      font-size: 2rem;
-      margin-bottom: 0.75rem;
-      font-weight: 700;
-    }
-
-    .hero p {
-      font-size: 1rem;
-      opacity: 0.92;
-      margin-bottom: 1.5rem;
-      line-height: 1.65;
-      max-width: 540px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .hero .btn-primary {
-      background: var(--white);
-      color: var(--pink-deep);
-      margin-right: 0.5rem;
-    }
-
-    .hero .btn-primary:hover {
-      background: var(--pink-light);
-    }
-
-    .hero .btn-outline {
-      border-color: var(--white);
-      color: var(--white);
-    }
-
-    .hero .btn-outline:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    /* ── Info Cards ── */
-    .info-card {
-      background: var(--white);
-      border: 1px solid var(--pink-border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      box-shadow: 0 2px 8px var(--shadow);
-    }
-
-    .info-card h3 {
-      font-family: var(--font-head);
-      color: var(--pink-deep);
-      font-size: 1rem;
+    .login-emoji {
+      font-size: 2.6rem;
+      line-height: 1;
       margin-bottom: 0.5rem;
     }
 
-    .info-card p {
-      font-size: 0.87rem;
-      line-height: 1.6;
-      color: var(--text-mid);
-    }
-
-    /* ── Menu ── */
-    .menu-card {
-      background: var(--white);
-      border: 1px solid var(--pink-border);
-      border-radius: 10px;
-      padding: 1rem 1.1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      box-shadow: 0 1px 6px var(--shadow);
-    }
-
-    .menu-card .nama {
-      font-weight: 700;
+    .login-title {
+      font-family: var(--font-head);
       color: var(--pink-deep);
-      font-size: 0.95rem;
+      font-size: 1.6rem;
+      margin-bottom: 0.35rem;
     }
 
-    .menu-card .harga {
-      color: var(--pink-main);
-      font-size: 0.88rem;
-      font-weight: 700;
-    }
-
-    .menu-card .keterangan {
-      font-size: 0.82rem;
+    .login-sub {
+      font-size: 0.9rem;
       color: var(--text-soft);
+      margin-bottom: 1.25rem;
+      line-height: 1.55;
+    }
+
+    .login-notice {
+      background: var(--pink-light);
+      border: 1px solid var(--pink-border);
+      color: var(--text-mid);
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.85rem;
+      margin-bottom: 1.1rem;
       line-height: 1.5;
     }
 
-    /* ── Jam Operasional ── */
-    .jam-section {
-      background: var(--white);
-      border: 1px solid var(--pink-border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 10px var(--shadow);
-      margin-bottom: 2rem;
+    #formLogin {
+      text-align: left;
     }
 
-    .mb-2 { margin-bottom: 2rem; }
-    .mb-1 { margin-bottom: 1rem; }
-
-    /* ============================================
-       OPENING / SPLASH SCREEN 🌸
-       ============================================ */
-    #ccSplash {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: linear-gradient(135deg, var(--pink-deep) 0%, var(--pink-main) 55%, var(--pink-mid) 100%);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-
-    #ccSplash.cc-splash-hide {
-      opacity: 0;
-      transform: scale(1.04);
-      pointer-events: none;
-    }
-
-    #ccSplash .cc-splash-petal {
-      position: absolute;
-      font-size: 1.6rem;
-      opacity: 0.55;
-      animation: ccFloat 7s ease-in-out infinite, ccSpin 12s linear infinite;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
-    }
-
-    .cc-splash-inner {
+    .pw-wrap {
       position: relative;
-      z-index: 2;
-      text-align: center;
-      color: var(--white);
-      padding: 0 1.5rem;
     }
 
-    .cc-splash-ring {
-      width: 118px;
-      height: 118px;
-      margin: 0 auto 0.9rem;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.16);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      animation: ccSplashRingPop 0.7s cubic-bezier(.34, 1.56, .64, 1) 0.15s forwards;
+    .pw-wrap input {
+      padding-right: 2.8rem;
     }
 
-    .cc-splash-logo {
-      font-size: 3.4rem;
-      display: inline-block;
-      animation: ccSplashBloom 1.8s ease-in-out 0.35s infinite;
-    }
-
-    @keyframes ccSplashRingPop {
-      0% { opacity: 0; transform: scale(0.4); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes ccSplashBloom {
-      0%, 100% { transform: scale(1) rotate(-4deg); }
-      50% { transform: scale(1.12) rotate(4deg); }
-    }
-
-    .cc-splash-title {
-      font-family: var(--font-head);
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      opacity: 0;
-      animation: ccSplashRise 0.6s ease 0.35s forwards;
-    }
-
-    .cc-splash-sub {
-      font-size: 0.92rem;
-      opacity: 0;
-      margin-top: 0.4rem;
-      animation: ccSplashRise 0.6s ease 0.55s forwards;
-    }
-
-    @keyframes ccSplashRise {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 0.95; transform: translateY(0); }
-    }
-
-    .cc-splash-dots {
-      margin-top: 1.6rem;
-      display: flex;
-      gap: 0.4rem;
-      justify-content: center;
-      opacity: 0;
-      animation: ccSplashRise 0.6s ease 0.75s forwards;
-    }
-
-    .cc-splash-dots span {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--white);
-      animation: ccSplashDot 1.1s ease-in-out infinite;
-    }
-
-    .cc-splash-dots span:nth-child(2) { animation-delay: 0.15s; }
-    .cc-splash-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-    @keyframes ccSplashDot {
-      0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
-      40% { transform: translateY(-7px); opacity: 1; }
-    }
-
-    .cc-splash-skip {
+    .pw-toggle {
       position: absolute;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--white);
-      background: rgba(255, 255, 255, 0.16);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 20px;
-      padding: 0.4rem 1rem;
-      font-size: 0.78rem;
-      font-family: var(--font-body);
+      right: 0.45rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
       cursor: pointer;
-      opacity: 0;
-      animation: ccSplashRise 0.6s ease 1s forwards;
-    }
-
-    .cc-splash-skip:hover {
-      background: rgba(255, 255, 255, 0.28);
-    }
-
-    @media (max-width: 600px) {
-      .cc-splash-logo { font-size: 2.7rem; }
-      .cc-splash-title { font-size: 1.5rem; }
-      .cc-splash-ring { width: 96px; height: 96px; }
-    }
-
-    /* ============================================
-       METODE PEMBAYARAN 💳
-       ============================================ */
-    .payment-section {
-      background: var(--white);
-      border: 1px solid var(--pink-border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 10px var(--shadow);
-      margin-bottom: 2rem;
-    }
-
-    .payment-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 0.9rem;
-      margin-top: 1rem;
-    }
-
-    .payment-card {
-      background: var(--pink-pale);
-      border: 1px solid var(--pink-border);
-      border-radius: 12px;
-      padding: 1.1rem 0.9rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.35rem;
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeUp 0.5s ease forwards;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-    }
-
-    .payment-card:hover {
-      transform: translateY(-5px) scale(1.03);
-      box-shadow: 0 8px 18px var(--shadow);
-      background: var(--white);
-    }
-
-    .payment-card:nth-child(2) { animation-delay: 0.05s; }
-    .payment-card:nth-child(3) { animation-delay: 0.1s; }
-    .payment-card:nth-child(4) { animation-delay: 0.15s; }
-    .payment-card:nth-child(5) { animation-delay: 0.2s; }
-    .payment-card:nth-child(6) { animation-delay: 0.25s; }
-
-    .payment-card .icon {
-      font-size: 1.9rem;
+      font-size: 1.1rem;
       line-height: 1;
+      padding: 0.3rem;
     }
 
-    .payment-card .nama-metode {
-      font-weight: 700;
-      color: var(--pink-deep);
-      font-size: 0.9rem;
-    }
-
-    .payment-card .ket-metode {
-      font-size: 0.76rem;
-      color: var(--text-soft);
-      line-height: 1.4;
-    }
-
-    .payment-note {
-      margin-top: 1.1rem;
-      font-size: 0.83rem;
+    .login-options {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.86rem;
       color: var(--text-mid);
-      background: var(--pink-light);
-      border-radius: 10px;
-      padding: 0.7rem 0.9rem;
-      line-height: 1.55;
+      margin-bottom: 1.1rem;
+    }
+
+    .login-options input {
+      accent-color: var(--pink-main);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .login-options label {
+      cursor: pointer;
+    }
+
+    .login-demo {
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      margin-bottom: 1rem;
+      line-height: 1.6;
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Opening / Splash Screen 🌸 -->
-  <div id="ccSplash" role="status" aria-label="Memuat Cloudy Crumbs">
-    <span class="cc-splash-petal" style="top:14%; left:12%; --rot:-8deg;">🌸</span>
-    <span class="cc-splash-petal" style="top:70%; left:16%; --rot:10deg; animation-delay:0.6s;">🧁</span>
-    <span class="cc-splash-petal" style="top:22%; left:84%; --rot:6deg; animation-delay:1.1s;">🍪</span>
-    <span class="cc-splash-petal" style="top:76%; left:82%; --rot:-10deg; animation-delay:0.3s;">🌸</span>
-    <span class="cc-splash-petal" style="top:48%; left:6%; --rot:4deg; animation-delay:1.6s;">🍵</span>
-
-    <div class="cc-splash-inner">
-      <div class="cc-splash-ring"><span class="cc-splash-logo">🌸</span></div>
-      <h2 class="cc-splash-title">Cloudy Crumbs</h2>
-      <p class="cc-splash-sub">Menyiapkan kehangatan untukmu...</p>
-      <div class="cc-splash-dots"><span></span><span></span><span></span></div>
+  <header style="position:relative;">
+    <div class="header-inner">
+      <h1>🌸 Cloudy Crumbs</h1>
+      <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
     </div>
-
-    <button type="button" class="cc-splash-skip" id="ccSplashSkip">Lewati ›</button>
-  </div>
-
-  <!-- Hamburger menu mobile (dementhia) -->
-<header style="position:relative;">
-  <div class="header-inner">
-    <h1>🌸 Cloudy Crumbs</h1>
-    <p>Kafe & Bakeri — Tempat Hangat di Setiap Gigitan</p>
-  </div>
-  <button class="hamburger" id="hamburgerBtn" aria-label="Buka menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-</header>
+    </header>
 
   <nav aria-label="Menu Utama">
     <ul>
-      <li><a href="index.html" class="active">Beranda</a></li>
-      <li><a href="booking.html">Reservasi</a></li>
-      <li><a href="riwayat.html">Riwayat</a></li>
+      <li><a href="index.html" class="active">Login</a></li>
     </ul>
   </nav>
 
   <main>
 
-    <!-- Hero -->
-    <section class="hero" aria-labelledby="judul-hero">
-      <h2 id="judul-hero">Selamat Datang di Cloudy Crumbs 🌸</h2>
-      <p id="statusBukaSekarang" class="status-live">⏳ Mengecek jam buka...</p>
-      <p>
-        Cloudy Crumbs adalah kafe bakery sejak 2019 yang 
-        menyajikan cookies fresh dan berbagai pilihan tea 
-        dalam suasana hangat dan nyaman. Buat reservasi sekarang dan pastikan meja favorit Anda tersedia!
-      </p>
-      <a href="booking.html" class="btn btn-primary">Reservasi Sekarang</a>
-      <a href="riwayat.html" class="btn btn-outline">Lihat Riwayat</a>
-    </section>
+    <div class="login-wrap">
+      <div class="card login-card">
+        <div class="login-emoji">🌸</div>
+        <h1 class="login-title">Login</h1>
+        <p class="login-sub">Silakan login untuk melihat beranda, membuat reservasi, dan melihat riwayat reservasimu.</p>
 
-    <!-- Info Kafe -->
-    <section class="mb-2" aria-label="Informasi Kafe">
-      <h2 class="section-heading">Informasi Kafe</h2>
-      <div class="grid-3">
-        <article class="info-card">
-          <h3>📍 Lokasi</h3>
-          <p>Jl. Kopi Hangat No. 12,<br>Medan Baru, Sumatera Utara 20154</p>
-        </article>
-        <article class="info-card">
-          <h3>📞 Kontak</h3>
-          <p>
-            Telepon: (061) 123-4567<br>
-            WhatsApp: 0812-3456-7890<br>
-            Email: hello@cloudycrumbs.id
-          </p>
-        </article>
-        <article class="info-card">
-          <h3>🪑 Kapasitas</h3>
-          <p>
-            Total 60 kursi tersedia.<br>
-            Indoor (AC): 40 kursi.<br>
-            Outdoor (Taman): 20 kursi.
-          </p>
-        </article>
-      </div>
-    </section>
+        <p class="login-notice" id="loginNotice" hidden>
+          🔒 Kamu perlu login dulu untuk membuka halaman tersebut ya.
+        </p>
 
-    <!-- Menu Unggulan -->
-    <section class="mb-2" aria-labelledby="judul-menu">
-      <h2 class="section-heading" id="judul-menu">🍰 Menu Unggulan</h2>
-      <p class="section-sub">Cari menu favoritmu atau saring berdasarkan kategori di bawah ini 👇</p>
+        <form id="formLogin" novalidate>
+          <div class="form-group">
+            <label for="username">Username *</label>
+            <input type="text" id="username" name="username" placeholder="Masukkan username" autocomplete="username"
+              required />
+          </div>
 
-      <div class="menu-toolbar">
-        <div class="menu-search">
-          <input type="text" id="menuSearchInput" placeholder="Cari nama menu, mis. matcha, cokelat..." aria-label="Cari menu" />
-        </div>
-        <div class="menu-tabs" role="tablist" aria-label="Filter kategori menu">
-          <button type="button" class="menu-tab active" data-kategori="semua">🍽️ Semua</button>
-          <button type="button" class="menu-tab" data-kategori="cupcake">🧁 Cupcake</button>
-          <button type="button" class="menu-tab" data-kategori="tea">🍵 Tea</button>
-        </div>
-      </div>
-
-      <div class="grid-3" id="menuGrid">
-
-  <!-- CUPCAKE -->
-  <article class="menu-card best" data-kategori="cupcake">
-    <span class="nama">🧁 Strawberry Cream Cupcake</span>
-    <span class="harga">Rp 28.000</span>
-    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.9)</span></span>
-    <span class="keterangan">Cupcake lembut dengan krim strawberry manis segar.</span>
-  </article>
-
-  <article class="menu-card" data-kategori="cupcake">
-    <span class="nama">🧁 Chocolate Lava Cupcake</span>
-    <span class="harga">Rp 30.000</span>
-    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.7)</span></span>
-    <span class="keterangan">Cokelat lumer di dalam, favorit pecinta manis.</span>
-  </article>
-
-  <article class="menu-card best" data-kategori="cupcake">
-    <span class="nama">🧁 Vanilla Berry Cupcake</span>
-    <span class="harga">Rp 27.000</span>
-    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.8)</span></span>
-    <span class="keterangan">Vanilla soft cake dengan topping blueberry & raspberry.</span>
-  </article>
-
-  <!-- TEA -->
-  <article class="menu-card best" data-kategori="tea">
-    <span class="nama">🍵 Matcha Latte Creamy</span>
-    <span class="harga">Rp 34.000</span>
-    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.9)</span></span>
-    <span class="keterangan">Matcha Jepang dengan susu creamy dan foam lembut.</span>
-  </article>
-
-  <article class="menu-card" data-kategori="tea">
-    <span class="nama">🍋 Lemon Tea Fresh</span>
-    <span class="harga">Rp 22.000</span>
-    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.5)</span></span>
-    <span class="keterangan">Teh segar dengan perasan lemon asli, dingin & refreshing.</span>
-  </article>
-
-  <article class="menu-card best" data-kategori="tea">
-    <span class="nama">🌸 Rose Milk Tea</span>
-    <span class="harga">Rp 29.000</span>
-    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.8)</span></span>
-    <span class="keterangan">Milk tea dengan aroma mawar yang soft & calming.</span>
-  </article>
-
-  <article class="menu-card" data-kategori="tea">
-    <span class="nama">🧋 Brown Sugar Milk Tea</span>
-    <span class="harga">Rp 31.000</span>
-    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.6)</span></span>
-    <span class="keterangan">Milk tea manis dengan brown sugar caramel khas.</span>
-  </article>
-
-  <article class="menu-card" data-kategori="tea">
-    <span class="nama">🍑 Peach Iced Tea</span>
-    <span class="harga">Rp 26.000</span>
-    <span class="rating">★★★★☆ <span style="color:var(--text-soft); font-weight:600;">(4.4)</span></span>
-    <span class="keterangan">Teh dingin dengan rasa peach yang manis segar.</span>
-  </article>
-
-  <article class="menu-card best" data-kategori="cupcake">
-    <span class="nama">🍫 Choco Hazelnut Cupcake</span>
-    <span class="harga">Rp 32.000</span>
-    <span class="rating">★★★★★ <span style="color:var(--text-soft); font-weight:600;">(4.9)</span></span>
-    <span class="keterangan">Cupcake cokelat dengan krim hazelnut premium.</span>
-  </article>
-</div>
-      <p class="menu-empty" id="menuEmptyState">🌸 Menu tidak ditemukan. Coba kata kunci atau kategori lain ya~</p>
-    </section>
-
-    <!-- Testimoni Pelanggan -->
-    <section class="mb-2" aria-labelledby="judul-testimoni">
-      <h2 class="section-heading" id="judul-testimoni">💬 Apa Kata Mereka</h2>
-      <div class="testimoni-grid">
-        <article class="testimoni-card">
-          <span class="bintang">★★★★★</span>
-          <p class="isi">"Cupcake-nya lembut banget dan suasananya cozy, cocok buat kerja santai sambil ngeteh."</p>
-          <div class="penulis">
-            <span class="testimoni-avatar">R</span>
-            <div>
-              <div class="testimoni-nama">Rani A.</div>
-              <div class="testimoni-sub">Pelanggan Tetap</div>
+          <div class="form-group">
+            <label for="password">Password *</label>
+            <div class="pw-wrap">
+              <input type="password" id="password" name="password" placeholder="Masukkan password"
+                autocomplete="current-password" required />
+              <button type="button" class="pw-toggle" id="pwToggle" aria-label="Tampilkan password">👁️</button>
             </div>
           </div>
-        </article>
-        <article class="testimoni-card">
-          <span class="bintang">★★★★★</span>
-          <p class="isi">"Reservasinya gampang banget lewat website, pas datang meja langsung siap. Recommended!"</p>
-          <div class="penulis">
-            <span class="testimoni-avatar">F</span>
-            <div>
-              <div class="testimoni-nama">Fajar S.</div>
-              <div class="testimoni-sub">Kunjungan Keluarga</div>
-            </div>
+
+          <div class="login-options">
+            <input type="checkbox" id="ingat" name="ingat" />
+            <label for="ingat">Ingat saya di perangkat ini</label>
           </div>
-        </article>
-        <article class="testimoni-card">
-          <span class="bintang">★★★★☆</span>
-          <p class="isi">"Matcha latte-nya juara, area outdoornya juga adem buat nongkrong sore-sore."</p>
-          <div class="penulis">
-            <span class="testimoni-avatar">D</span>
-            <div>
-              <div class="testimoni-nama">Dinda P.</div>
-              <div class="testimoni-sub">Pelanggan Baru</div>
-            </div>
-          </div>
-        </article>
+
+          <button type="submit" class="btn btn-primary btn-full">🔐 Login</button>
+        </form>
+
+        <hr class="divider" />
+
+        <p class="login-demo">
+          Akun demo:<br>
+          Username <strong>user</strong> · Password <strong>cloudy123</strong>
+        </p>
       </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="mb-2" aria-labelledby="judul-faq">
-      <h2 class="section-heading" id="judul-faq">❓ Pertanyaan yang Sering Ditanyakan</h2>
-      <div class="faq-list">
-        <div class="faq-item">
-          <button type="button" class="faq-question">Apakah reservasi bisa dibatalkan?
-            <span class="ikon">+</span>
-          </button>
-          <div class="faq-answer">Bisa. Pembatalan dapat dilakukan maksimal 1 jam sebelum jadwal kunjungan melalui halaman Riwayat Reservasi.</div>
-        </div>
-        <div class="faq-item">
-          <button type="button" class="faq-question">Apakah ada biaya untuk reservasi meja?
-            <span class="ikon">+</span>
-          </button>
-          <div class="faq-answer">Tidak ada biaya reservasi sama sekali. Kamu hanya perlu membayar makanan dan minuman yang dipesan saat berkunjung.</div>
-        </div>
-        <div class="faq-item">
-          <button type="button" class="faq-question">Bagaimana jika saya terlambat datang?
-            <span class="ikon">+</span>
-          </button>
-          <div class="faq-answer">Meja akan ditahan selama 15 menit dari jam reservasi. Jika lebih dari itu, meja bisa dialihkan ke tamu lain.</div>
-        </div>
-        <div class="faq-item">
-          <button type="button" class="faq-question">Apakah Cloudy Crumbs menerima pre-order kue?
-            <span class="ikon">+</span>
-          </button>
-          <div class="faq-answer">Tentu! Kamu bisa menghubungi kami via WhatsApp untuk pre-order kue ulang tahun atau pastri untuk acara khusus.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Jam Operasional (Tabel) -->
-    <section class="jam-section" aria-labelledby="judul-jam">
-      <h2 class="section-heading" id="judul-jam">🕐 Jam Operasional</h2>
-      <div class="tabel-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Hari</th>
-              <th>Jam Buka</th>
-              <th>Jam Tutup</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Senin – Kamis</td>
-              <td>08.00 WIB</td>
-              <td>21.00 WIB</td>
-              <td><span class="badge badge-hijau">Buka</span></td>
-            </tr>
-            <tr>
-              <td>Jumat</td>
-              <td>08.00 WIB</td>
-              <td>22.00 WIB</td>
-              <td><span class="badge badge-hijau">Buka</span></td>
-            </tr>
-            <tr>
-              <td>Sabtu</td>
-              <td>09.00 WIB</td>
-              <td>22.00 WIB</td>
-              <td><span class="badge badge-hijau">Buka</span></td>
-            </tr>
-            <tr>
-              <td>Minggu</td>
-              <td>09.00 WIB</td>
-              <td>20.00 WIB</td>
-              <td><span class="badge badge-hijau">Buka</span></td>
-            </tr>
-            <tr>
-              <td>Hari Libur Nasional</td>
-              <td>–</td>
-              <td>–</td>
-              <td><span class="badge badge-merah">Tutup</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Metode Pembayaran -->
-    <section class="payment-section" aria-labelledby="judul-payment">
-      <h2 class="section-heading" id="judul-payment">💳 Metode Pembayaran</h2>
-      <p class="section-sub">Bayar dengan cara apa pun yang paling nyaman buat kamu 🌸</p>
-
-      <div class="payment-grid">
-        <div class="payment-card">
-          <span class="icon">💵</span>
-          <span class="nama-metode">Tunai</span>
-          <span class="ket-metode">Bayar langsung di kasir</span>
-        </div>
-        <div class="payment-card">
-          <span class="icon">📱</span>
-          <span class="nama-metode">QRIS</span>
-          <span class="ket-metode">Scan & bayar dari semua e-wallet / m-banking</span>
-        </div>
-        <div class="payment-card">
-          <span class="icon">💳</span>
-          <span class="nama-metode">Kartu Debit / Kredit</span>
-          <span class="ket-metode">Visa, Mastercard, & kartu lokal</span>
-        </div>
-        <div class="payment-card">
-          <span class="icon">🏦</span>
-          <span class="nama-metode">Transfer Bank</span>
-          <span class="ket-metode">BCA, Mandiri, BNI, BRI</span>
-        </div>
-        <div class="payment-card">
-          <span class="icon">👛</span>
-          <span class="nama-metode">E-Wallet</span>
-          <span class="ket-metode">GoPay, OVO, DANA, ShopeePay</span>
-        </div>
-      </div>
-
-      <p class="payment-note">
-        ℹ️ Pembayaran dilakukan langsung di kafe saat kunjungan — reservasi meja
-        melalui website ini sepenuhnya gratis, tanpa DP maupun biaya tambahan.
-      </p>
-    </section>
+    </div>
 
   </main>
 
@@ -687,38 +188,7 @@
     </div>
   </footer>
 
-  <!-- Logic Opening / Splash Screen 🌸 -->
-  <script>
-    (function () {
-      "use strict";
-      var splash = document.getElementById("ccSplash");
-      if (!splash) return;
-
-      // Hanya tampil sekali per sesi biar gak ganggu kalau bolak-balik ke Beranda
-      if (sessionStorage.getItem("ccSplashSeen") === "1") {
-        splash.style.display = "none";
-        return;
-      }
-
-      document.body.style.overflow = "hidden";
-      var sudahTutup = false;
-
-      function tutupSplash() {
-        if (sudahTutup) return;
-        sudahTutup = true;
-        splash.classList.add("cc-splash-hide");
-        document.body.style.overflow = "";
-        sessionStorage.setItem("ccSplashSeen", "1");
-        setTimeout(function () {
-          splash.style.display = "none";
-        }, 650);
-      }
-
-      document.getElementById("ccSplashSkip").addEventListener("click", tutupSplash);
-      setTimeout(tutupSplash, 2200);
-    })();
-  </script>
-
   <script src="script.js" defer></script>
 </body>
+
 </html>

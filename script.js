@@ -16,6 +16,24 @@
   function $(sel, ctx) { return (ctx || document).querySelector(sel); }
   function $all(sel, ctx) { return Array.from((ctx || document).querySelectorAll(sel)); }
 
+  // Escape teks dari pengguna sebelum disisipkan ke innerHTML (cegah XSS)
+  function esc(str) {
+    return String(str == null ? "" : str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // Tanggal hari ini menurut zona waktu lokal (toISOString memakai UTC,
+  // jadi di WIB antara 00.00-07.00 hasilnya masih "kemarin")
+  function hariIniLokal() {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
   function getReservasi() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -189,6 +207,8 @@
   /* ------------------------------------------------------------
      1a. POPUP NOTIFIKASI (dibuat / dibatalkan / diedit)
   ------------------------------------------------------------ */
+  let popupOnClose = null;
+
   function ensurePopup() {
     let overlay = $("#ccPopup");
     if (overlay) return overlay;
@@ -208,7 +228,13 @@
     `;
     document.body.appendChild(overlay);
 
-    const tutup = () => overlay.classList.remove("show");
+    const tutup = () => {
+      if (!overlay.classList.contains("show")) return;
+      overlay.classList.remove("show");
+      const cb = popupOnClose;
+      popupOnClose = null;
+      if (typeof cb === "function") cb();
+    };
     $("#ccPopupOk", overlay).addEventListener("click", tutup);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") tutup(); });
@@ -235,16 +261,9 @@
       kodeEl.style.display = "none";
     }
 
+    popupOnClose = onClose || null;
     updateNavOffset();
     overlay.classList.add("show");
-
-    const okBtn = $("#ccPopupOk", overlay);
-    const handler = function () {
-      overlay.classList.remove("show");
-      if (typeof onClose === "function") onClose();
-      okBtn.removeEventListener("click", handler);
-    };
-    okBtn.addEventListener("click", handler);
   }
 
   window.ccPopup = showPopup;
@@ -252,6 +271,8 @@
   /* ------------------------------------------------------------
      1a-2. POPUP KONFIRMASI HAPUS (cute confirm dialog) 🗑️🌸
   ------------------------------------------------------------ */
+  let confirmCb = null;
+
   function ensureConfirmPopup() {
     let overlay = $("#ccConfirmPopup");
     if (overlay) return overlay;
@@ -274,7 +295,20 @@
     `;
     document.body.appendChild(overlay);
 
-    const tutup = () => overlay.classList.remove("show");
+    const tutup = () => {
+      if (!overlay.classList.contains("show")) return;
+      overlay.classList.remove("show");
+      const cb = confirmCb;
+      confirmCb = null;
+      if (cb && typeof cb.onCancel === "function") cb.onCancel();
+    };
+    $("#ccConfirmOk", overlay).addEventListener("click", () => {
+      if (!overlay.classList.contains("show")) return;
+      overlay.classList.remove("show");
+      const cb = confirmCb;
+      confirmCb = null;
+      if (cb && typeof cb.onConfirm === "function") cb.onConfirm();
+    });
     $("#ccConfirmCancel", overlay).addEventListener("click", tutup);
     overlay.addEventListener("click", (e) => { if (e.target === overlay) tutup(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") tutup(); });
@@ -324,21 +358,8 @@
     okBtn.className = "btn " + okClass;
     cancelBtn.textContent = cancelText;
 
-    const handleOk = () => {
-      overlay.classList.remove("show");
-      if (typeof onConfirm === "function") onConfirm();
-      okBtn.removeEventListener("click", handleOk);
-      cancelBtn.removeEventListener("click", handleCancel);
-    };
-    const handleCancel = () => {
-      overlay.classList.remove("show");
-      if (typeof onCancel === "function") onCancel();
-      okBtn.removeEventListener("click", handleOk);
-      cancelBtn.removeEventListener("click", handleCancel);
-    };
-
-    okBtn.addEventListener("click", handleOk);
-    cancelBtn.addEventListener("click", handleCancel);
+    // callback disimpan di satu tempat, jadi tidak menumpuk walau popup ditutup lewat Esc / klik luar
+    confirmCb = { onConfirm, onCancel };
   }
 
   window.ccConfirmPopup = showConfirmPopup;
@@ -417,6 +438,13 @@
       document.body.appendChild(overlay);
     }
 
+    window.addEventListener("pageshow", function (e) {
+      if (e.persisted) {
+        document.body.classList.remove("page-leave");
+        overlay.classList.remove("show");
+      }
+    });
+
     const links = $all('a[href$=".html"]');
     links.forEach((link) => {
       // hanya untuk navigasi internal di website ini, bukan link luar/aksi tabel
@@ -477,7 +505,7 @@
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) {
         return "Format emailnya kurang pas nih";
       }
-    } else if (input.type === "date" && input.value) {
+    } else if (input.type === "date" && input.value && input.id.indexOf("edit-") !== 0) {
       const dipilih = new Date(input.value + "T00:00:00");
       const hariIni = new Date();
       hariIni.setHours(0, 0, 0, 0);
@@ -523,7 +551,8 @@
     $all("input, select, textarea", form).forEach((input) => {
       input.addEventListener("blur", () => validasiSatuField(input));
       input.addEventListener("input", () => {
-        if (input.closest(".form-group").classList.contains("field-error")) {
+        const grup = input.closest(".form-group");
+        if (grup && grup.classList.contains("field-error")) {
           hapusError(input);
         }
       });
@@ -541,7 +570,7 @@
     // menambahkan meja real time dan tanggal (dementhia)
     const inputTanggal = $("#tanggal", form);
 if (inputTanggal) {
-  const hariIni = new Date().toISOString().split("T")[0];
+  const hariIni = hariIniLokal();
   inputTanggal.min = hariIni;
   inputTanggal.addEventListener("change", updateKetersediaan);
   const inputArea = $("#area", form);
@@ -579,13 +608,14 @@ if (inputTanggal) {
 
       list.push(data);
       saveReservasi(list);
+      try { sessionStorage.setItem("ccBaruId", String(data.id)); } catch (err) { /* abaikan */ }
 
       tembakKonfeti();
       showPopup({
         jenis: "berhasil",
         emoji: "🎉",
         title: "Reservasi Terkirim!",
-        message: `Terima kasih, <strong>${data.nama}</strong>! Mejamu sudah kami catat ya 🌸`,
+        message: `Terima kasih, <strong>${esc(data.nama)}</strong>! Mejamu sudah kami catat ya 🌸`,
         kode: data.kode,
         tombol: "Lihat Riwayat →",
         onClose: () => {
@@ -596,6 +626,7 @@ if (inputTanggal) {
 
       form.reset();
       $all(".form-group", form).forEach(hapusError);
+      updateKetersediaan();
     });
   }
 
@@ -715,7 +746,7 @@ function updateKetersediaan() {
     return `<span class="badge badge-tersedia">Tersedia (${sisa} kursi)</span>`;
   }
 
-  const hariIni = new Date().toISOString().split("T")[0];
+  const hariIni = hariIniLokal();
 
   tabelBody.innerHTML = slots.map(slot => {
     if (!tanggalDipilih || tanggalDipilih < hariIni) {
@@ -768,7 +799,8 @@ function updateKetersediaan() {
     data = data.slice().sort((a, b) => b.id - a.id);
     // menambahkan pagination dinamis (dementhia)
     // Hitung total halaman
-    const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+    const totalData = data.length;
+    const totalPages = Math.ceil(totalData / ITEMS_PER_PAGE);
     if (currentPage > totalPages) currentPage = 1;
 
     // Potong data sesuai halaman aktif
@@ -795,12 +827,12 @@ function updateKetersediaan() {
         aksi += `<button type="button" class="btn-hapus" data-aksi="hapus" data-id="${r.id}">Hapus</button>`;
 
         tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td><strong>${r.kode}</strong></td>
-          <td>${r.nama}</td>
+          <td>${start + idx + 1}</td>
+          <td><strong>${esc(r.kode)}</strong></td>
+          <td>${esc(r.nama)}</td>
           <td>${formatTanggal(r.tanggal)}</td>
           <td>${(r.waktu || "-").replace(":", ".")}</td>
-          <td>${r.tamu} orang</td>
+          <td>${esc(r.tamu)} orang</td>
           <td>${labelArea(r.area)}</td>
           <td>${badgeStatus(r.status)}</td>
           <td><div class="aksi-group">${aksi}</div></td>
@@ -812,7 +844,7 @@ function updateKetersediaan() {
     baruDibuatId = null;
 
     const info = $("#infoHasil");
-    if (info) info.textContent = `(${data.length} hasil)`;
+    if (info) info.textContent = `(${totalData} hasil)`;
 
     renderPagination(totalPages);
 
@@ -965,7 +997,7 @@ function updateKetersediaan() {
       showToast({
         type: "success",
         title: "Reservasi diperbarui ✏️",
-        message: `Perubahan data ${kode} (${fields.nama}) berhasil disimpan.`,
+        message: `Perubahan data ${esc(kode)} (${esc(fields.nama)}) berhasil disimpan.`,
         emoji: "💾",
       });
     });
@@ -1011,20 +1043,20 @@ function updateKetersediaan() {
     const body = $("#ccDetailBody", overlay);
 
     const baris = [
-      ["Kode Reservasi", `<strong>${data.kode}</strong>`],
+      ["Kode Reservasi", `<strong>${esc(data.kode)}</strong>`],
       ["Status", badgeStatus(data.status)],
-      ["Nama Lengkap", data.nama || "-"],
-      ["No. Telepon", data.telepon || "-"],
-      ["Alamat Email", data.email || "-"],
+      ["Nama Lengkap", esc(data.nama) || "-"],
+      ["No. Telepon", esc(data.telepon) || "-"],
+      ["Alamat Email", esc(data.email) || "-"],
       ["Tanggal Kunjungan", formatTanggal(data.tanggal)],
       ["Jam Kunjungan", (data.waktu || "-").replace(":", ".") + (data.waktu ? " WIB" : "")],
-      ["Jumlah Tamu", data.tamu ? `${data.tamu} orang` : "-"],
+      ["Jumlah Tamu", data.tamu ? `${esc(data.tamu)} orang` : "-"],
       ["Area Tempat Duduk", labelArea(data.area)],
       ["Jenis Acara", data.acara ? ({
         santai: "Kunjungan Biasa", ultah: "Ulang Tahun", meeting: "Pertemuan Kerja",
         kencan: "Kencan / Perayaan", keluarga: "Makan Keluarga", lainnya: "Lainnya",
       }[data.acara] || data.acara) : "-"],
-      ["Catatan / Permintaan Khusus", data.catatan ? data.catatan : "Tidak ada catatan khusus"],
+      ["Catatan / Permintaan Khusus", data.catatan ? esc(data.catatan) : "Tidak ada catatan khusus"],
     ];
 
     body.innerHTML = baris.map(([label, val]) => `
@@ -1064,7 +1096,7 @@ function updateKetersediaan() {
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<title>Bukti Reservasi ${data.kode}</title>
+<title>Bukti Reservasi ${esc(data.kode)}</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -1093,13 +1125,13 @@ function updateKetersediaan() {
     <p>Bukti Reservasi Meja</p>
   </div>
   <hr class="garis" />
-  <div class="kode">${data.kode}</div>
+  <div class="kode">${esc(data.kode)}</div>
   <table>
-    <tr><td>Nama Tamu</td><td>${data.nama || "-"}</td></tr>
-    <tr><td>No. Telepon</td><td>${data.telepon || "-"}</td></tr>
+    <tr><td>Nama Tamu</td><td>${esc(data.nama) || "-"}</td></tr>
+    <tr><td>No. Telepon</td><td>${esc(data.telepon) || "-"}</td></tr>
     <tr><td>Tanggal</td><td>${formatTanggal(data.tanggal)}</td></tr>
     <tr><td>Jam</td><td>${(data.waktu || "-").replace(":", ".")} WIB</td></tr>
-    <tr><td>Jumlah Tamu</td><td>${data.tamu ? data.tamu + " orang" : "-"}</td></tr>
+    <tr><td>Jumlah Tamu</td><td>${data.tamu ? esc(data.tamu) + " orang" : "-"}</td></tr>
     <tr><td>Area</td><td>${labelArea(data.area)}</td></tr>
     <tr><td>Jenis Acara</td><td>${acaraMap[data.acara] || "-"}</td></tr>
   </table>
@@ -1144,8 +1176,14 @@ function updateKetersediaan() {
     if (!tbody) return;
 
     // tandai data yang baru saja dibuat dari halaman booking (untuk efek highlight)
-    const list = getReservasi();
-    if (list.length) baruDibuatId = list[list.length - 1].id;
+    // highlight baris baru HANYA sekali, setelah redirect dari halaman booking
+    try {
+      const idBaru = sessionStorage.getItem("ccBaruId");
+      if (idBaru) {
+        baruDibuatId = Number(idBaru);
+        sessionStorage.removeItem("ccBaruId");
+      }
+    } catch (err) { /* abaikan */ }
 
     renderTabelRiwayat();
 
@@ -1153,6 +1191,7 @@ function updateKetersediaan() {
     if (form) {
       form.addEventListener("submit", function (e) {
         e.preventDefault();
+        currentPage = 1;
         renderTabelRiwayat(ambilFilter());
         showToast({ type: "info", message: "Filter diterapkan 🔍", duration: 1800 });
       });
@@ -1162,6 +1201,7 @@ function updateKetersediaan() {
     if (btnReset) {
       btnReset.addEventListener("click", function () {
         if (form) form.reset();
+        currentPage = 1;
         renderTabelRiwayat();
         showToast({ type: "info", message: "Filter dikosongkan kembali 🌸", duration: 1800 });
       });
@@ -1189,7 +1229,7 @@ function updateKetersediaan() {
 
         showConfirmPopup({
           title: "Batalkan Reservasi? 📅",
-          message: `Batalkan reservasi <strong>${data.kode}</strong> milik <strong>${data.nama}</strong>?<br><br>Meja yang sudah dipesan akan dilepas dan status berubah jadi <em>Dibatalkan</em>.`,
+          message: `Batalkan reservasi <strong>${esc(data.kode)}</strong> milik <strong>${esc(data.nama)}</strong>?<br><br>Meja yang sudah dipesan akan dilepas dan status berubah jadi <em>Dibatalkan</em>.`,
           kode: data.kode,
           emoji: "😢",
           okText: "📅 Ya, Batalkan",
@@ -1203,7 +1243,7 @@ function updateKetersediaan() {
               jenis: "batal",
               emoji: "😢",
               title: "Reservasi Dibatalkan",
-              message: `Reservasi <strong>${data.kode}</strong> milik ${data.nama} berhasil dibatalkan. Semoga lain kali bisa mampir lagi ya~`,
+              message: `Reservasi <strong>${esc(data.kode)}</strong> milik ${esc(data.nama)} berhasil dibatalkan. Semoga lain kali bisa mampir lagi ya~`,
               tombol: "Oke, Mengerti",
             });
           },
@@ -1226,7 +1266,7 @@ function updateKetersediaan() {
 
         showConfirmPopup({
           title: "Hapus Reservasi? 🗑️",
-          message: `Yakin ingin menghapus reservasi <strong>${data.kode}</strong> milik <strong>${data.nama}</strong>?<br><br>Data akan hilang <em>selamanya</em> dan tidak bisa dikembalikan lagi! 💨`,
+          message: `Yakin ingin menghapus reservasi <strong>${esc(data.kode)}</strong> milik <strong>${esc(data.nama)}</strong>?<br><br>Data akan hilang <em>selamanya</em> dan tidak bisa dikembalikan lagi! 💨`,
           kode: data.kode,
           onConfirm: () => {
             deleteRecordById(id);
@@ -1235,7 +1275,7 @@ function updateKetersediaan() {
             showToast({
               type: "info",
               title: "Reservasi dihapus 🗑️",
-              message: `Data ${data.kode} (${data.nama}) telah dihapus permanen dari riwayat.`,
+              message: `Data ${esc(data.kode)} (${esc(data.nama)}) telah dihapus permanen dari riwayat.`,
               emoji: "🗑️",
             });
           },
@@ -1342,13 +1382,138 @@ function updateKetersediaan() {
   }
 
   /* ------------------------------------------------------------
+     6f. LOGIN / LOGOUT 🔐
+     Catatan: ini autentikasi sisi-klien (tanpa server) — cukup untuk
+     demo/tugas, tapi BUKAN keamanan sungguhan.
+  ------------------------------------------------------------ */
+  const SESSION_KEY = "ccSession";
+  const AKUN_DEMO = [
+    { username: "user", password: "cloudy123", nama: "Pelanggan" },
+  ];
+  const HALAMAN_BOLEH = ["beranda.html", "booking.html", "riwayat.html"];
+
+  function getSession() {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function simpanSession(user, ingat) {
+    const data = JSON.stringify({ username: user.username, nama: user.nama });
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_KEY);
+      (ingat ? localStorage : sessionStorage).setItem(SESSION_KEY, data);
+    } catch (e) { /* abaikan */ }
+  }
+
+  function hapusSession() {
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_KEY);
+    } catch (e) { /* abaikan */ }
+  }
+
+  function halamanTujuan() {
+    const next = new URLSearchParams(window.location.search).get("next");
+    return HALAMAN_BOLEH.indexOf(next) !== -1 ? next : "beranda.html";
+  }
+
+  function setupAuthNav() {
+    const ul = $("nav ul");
+    const user = getSession();
+    if (!ul || !user) return;
+
+    const li = document.createElement("li");
+    li.innerHTML = `<a href="#" id="navLogout" title="Logout dari akun">Logout (${esc(user.nama || user.username)})</a>`;
+    ul.appendChild(li);
+
+    $("#navLogout").addEventListener("click", function (e) {
+      e.preventDefault();
+      showConfirmPopup({
+        title: "Logout dari akun? 👋",
+        message: "Kamu akan logout dari akun <strong>" + esc(user.nama || user.username) + "</strong>.",
+        emoji: "👋",
+        okText: "Ya, Logout",
+        cancelText: "✕ Tetap di Sini",
+        okClass: "cc-btn-batal-konfirmasi",
+        onConfirm: () => {
+          hapusSession();
+          window.location.href = "index.html";
+        },
+      });
+    });
+  }
+
+  function setupLogin() {
+    const form = $("#formLogin");
+    if (!form) return;
+
+    // sudah login → langsung lempar ke tujuan
+    if (getSession()) {
+      window.location.replace(halamanTujuan());
+      return;
+    }
+
+    const notice = $("#loginNotice");
+    if (notice && new URLSearchParams(window.location.search).get("next")) {
+      notice.hidden = false;
+    }
+
+    setupLiveValidation(form);
+
+    const pw = $("#password", form);
+    const toggle = $("#pwToggle");
+    if (toggle && pw) {
+      toggle.addEventListener("click", function () {
+        const tampil = pw.type === "password";
+        pw.type = tampil ? "text" : "password";
+        toggle.textContent = tampil ? "🙈" : "👁️";
+        toggle.setAttribute("aria-label", tampil ? "Sembunyikan password" : "Tampilkan password");
+      });
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (!validasiForm(form)) {
+        showToast({ type: "error", title: "Oops, belum lengkap!", message: "Isi username dan password dulu ya~", emoji: "🙈" });
+        return;
+      }
+
+      const username = $("#username", form).value.trim().toLowerCase();
+      const password = pw.value;
+      const user = AKUN_DEMO.find((u) => u.username === username && u.password === password);
+
+      if (!user) {
+        tampilkanError(pw, "Username atau password salah, coba lagi ya");
+        pw.focus();
+        showToast({ type: "error", title: "Gagal login", message: "Username atau password tidak cocok.", emoji: "🔒" });
+        return;
+      }
+
+      simpanSession(user, $("#ingat", form).checked);
+      showToast({ type: "success", title: "Berhasil login!", message: `Halo, <strong>${esc(user.nama)}</strong> 🌸`, emoji: "🎉", duration: 1500 });
+      setTimeout(() => {
+        document.body.classList.add("page-leave");
+        window.location.href = halamanTujuan();
+      }, 900);
+    });
+  }
+
+  /* ------------------------------------------------------------
      7. INIT
   ------------------------------------------------------------ */
   document.addEventListener("DOMContentLoaded", function () {
     setupDekorasi();
+    setupAuthNav();
     setupPageTransition();
     setupFormReservasi();
     setupHalamanRiwayat();
+    setupLogin();
     setupStatusBuka();
     // menambahkan setup hamburger (dementhia)
     setupHamburger();
