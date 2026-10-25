@@ -1388,21 +1388,24 @@ function updateKetersediaan() {
   ------------------------------------------------------------ */
   const SESSION_KEY = "ccSession";
   const AKUN_DEMO = [
-    { username: "user", password: "cloudy123", nama: "Pelanggan" },
+    { username: "user", password: "cloudy123", nama: "Pelanggan", peran: "pelanggan" },
+    { username: "staf", password: "staf123", nama: "Staf Kafe", peran: "staf" },
   ];
   const HALAMAN_BOLEH = ["beranda.html", "booking.html", "riwayat.html"];
 
   function getSession() {
     try {
       const raw = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
+      const s = raw ? JSON.parse(raw) : null;
+      if (s && !s.peran) s.peran = "pelanggan";
+      return s;
     } catch (e) {
       return null;
     }
   }
 
   function simpanSession(user, ingat) {
-    const data = JSON.stringify({ username: user.username, nama: user.nama });
+    const data = JSON.stringify({ username: user.username, nama: user.nama, peran: user.peran });
     try {
       sessionStorage.removeItem(SESSION_KEY);
       localStorage.removeItem(SESSION_KEY);
@@ -1422,9 +1425,17 @@ function updateKetersediaan() {
     return HALAMAN_BOLEH.indexOf(next) !== -1 ? next : "beranda.html";
   }
 
+  /* Hak akses sederhana (sisi-klien): statistik reservasi hanya untuk peran "staf" */
+  function batasiStatistik(user) {
+    const box = $('section[aria-label="Ringkasan Reservasi"]');
+    if (!box || (user && user.peran === "staf")) return;
+    box.innerHTML = '<div class="info-box" id="infoStatistikTerbatas"><h3>📊 Statistik Reservasi</h3><p>Statistik ringkas hanya tersedia untuk akun Staf/Pemilik Kafe.</p></div>';
+  }
+
   function setupAuthNav() {
     const ul = $("nav ul");
     const user = getSession();
+    batasiStatistik(user);
     if (!ul || !user) return;
 
     const li = document.createElement("li");
