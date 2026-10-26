@@ -92,6 +92,14 @@
       cursor: pointer;
     }
 
+    .field-hint {
+      display: block;
+      margin-top: 0.3rem;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+
     .login-demo {
       font-size: 0.82rem;
       color: var(--text-soft);
@@ -122,42 +130,45 @@
       <div class="card login-card">
         <div class="login-emoji">🌸</div>
         <h1 class="login-title">Login</h1>
-        <p class="login-sub">Silakan login untuk melihat beranda, membuat reservasi, dan melihat riwayat reservasimu.</p>
+        <p class="login-sub">Silakan masuk menggunakan akun Anda untuk mengakses beranda, membuat reservasi, dan melihat riwayat reservasi.</p>
 
         <p class="login-notice" id="loginNotice" hidden>
-          🔒 Kamu perlu login dulu untuk membuka halaman tersebut ya.
+          🔒 Anda harus masuk (login) terlebih dahulu untuk mengakses halaman tersebut.
         </p>
 
         <form id="formLogin" novalidate>
           <div class="form-group">
-            <label for="username">Username *</label>
-            <input type="text" id="username" name="username" placeholder="Masukkan username" autocomplete="username"
-              required />
+            <label for="username">Nama Pengguna (Username) *</label>
+            <input type="text" id="username" name="username" placeholder="Masukkan nama pengguna Anda" autocomplete="username"
+              aria-describedby="hintUser" data-error-kosong="Nama pengguna (username) wajib diisi." required />
+            <small class="field-hint" id="hintUser">Nama akun Anda, bukan kata sandi.</small>
           </div>
 
           <div class="form-group">
-            <label for="password">Password *</label>
+            <label for="password">Kata Sandi (Password) *</label>
             <div class="pw-wrap">
-              <input type="password" id="password" name="password" placeholder="Masukkan password"
-                autocomplete="current-password" required />
-              <button type="button" class="pw-toggle" id="pwToggle" aria-label="Tampilkan password">👁️</button>
+              <input type="password" id="password" name="password" placeholder="Masukkan kata sandi Anda"
+                autocomplete="current-password" aria-describedby="hintPass"
+                data-error-kosong="Kata sandi (password) wajib diisi." required />
+              <button type="button" class="pw-toggle" id="pwToggle" aria-label="Tampilkan kata sandi">👁️</button>
             </div>
+            <small class="field-hint" id="hintPass">Kode rahasia untuk akun Anda. Klik ikon mata untuk menampilkannya.</small>
           </div>
 
           <div class="login-options">
             <input type="checkbox" id="ingat" name="ingat" />
-            <label for="ingat">Ingat saya di perangkat ini</label>
+            <label for="ingat">Ingat saya pada perangkat ini</label>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-full">🔐 Login</button>
+          <button type="submit" class="btn btn-primary btn-full">🔐 Masuk</button>
         </form>
 
         <hr class="divider" />
 
         <p class="login-demo">
-          Akun demo:<br>
-          Pelanggan: <strong>user</strong> · <strong>cloudy123</strong><br>
-          Staf/Pemilik: <strong>staf</strong> · <strong>staf123</strong>
+          Akun demonstrasi:<br>
+          Pelanggan &mdash; Nama pengguna: <strong>user</strong> | Kata sandi: <strong>cloudy123</strong><br>
+          Staf/Pemilik &mdash; Nama pengguna: <strong>staf</strong> | Kata sandi: <strong>staf123</strong>
         </p>
       </div>
     </div>

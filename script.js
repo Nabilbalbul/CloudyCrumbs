@@ -493,7 +493,7 @@
     }
 
     if (input.hasAttribute("required") && input.value.trim() === "") {
-      return "Wah, bagian ini belum diisi nih 🌸";
+      return input.getAttribute("data-error-kosong") || "Wah, bagian ini belum diisi nih 🌸";
     }
 
     if (input.type === "tel" && input.value.trim() !== "") {
@@ -1483,7 +1483,7 @@ function updateKetersediaan() {
         const tampil = pw.type === "password";
         pw.type = tampil ? "text" : "password";
         toggle.textContent = tampil ? "🙈" : "👁️";
-        toggle.setAttribute("aria-label", tampil ? "Sembunyikan password" : "Tampilkan password");
+        toggle.setAttribute("aria-label", tampil ? "Sembunyikan kata sandi" : "Tampilkan kata sandi");
       });
     }
 
@@ -1491,7 +1491,7 @@ function updateKetersediaan() {
       e.preventDefault();
 
       if (!validasiForm(form)) {
-        showToast({ type: "error", title: "Oops, belum lengkap!", message: "Isi username dan password dulu ya~", emoji: "🙈" });
+        showToast({ type: "error", title: "Data belum lengkap", message: "Mohon isi nama pengguna dan kata sandi terlebih dahulu.", emoji: "🙈" });
         return;
       }
 
@@ -1500,14 +1500,14 @@ function updateKetersediaan() {
       const user = AKUN_DEMO.find((u) => u.username === username && u.password === password);
 
       if (!user) {
-        tampilkanError(pw, "Username atau password salah, coba lagi ya");
+        tampilkanError(pw, "Nama pengguna atau kata sandi salah. Silakan periksa kembali.");
         pw.focus();
-        showToast({ type: "error", title: "Gagal login", message: "Username atau password tidak cocok.", emoji: "🔒" });
+        showToast({ type: "error", title: "Gagal masuk", message: "Nama pengguna atau kata sandi tidak sesuai.", emoji: "🔒" });
         return;
       }
 
       simpanSession(user, $("#ingat", form).checked);
-      showToast({ type: "success", title: "Berhasil login!", message: `Halo, <strong>${esc(user.nama)}</strong> 🌸`, emoji: "🎉", duration: 1500 });
+      showToast({ type: "success", title: "Berhasil masuk", message: `Selamat datang, <strong>${esc(user.nama)}</strong> 🌸`, emoji: "🎉", duration: 1500 });
       setTimeout(() => {
         document.body.classList.add("page-leave");
         window.location.href = halamanTujuan();
